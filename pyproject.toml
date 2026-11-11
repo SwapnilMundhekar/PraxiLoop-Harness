@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "praxiloop-harness"
+version = "0.1.0"
+description = "Mock-first Python AI agent harness with a guarded tool registry"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.128,<0.150",
+    "pydantic>=2.12,<3",
+    "uvicorn>=0.38,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9,<10",
+    "httpx>=0.28,<1",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
