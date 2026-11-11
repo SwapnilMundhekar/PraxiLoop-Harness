@@ -47,17 +47,16 @@ Give the user **complete Windows Command Prompt (CMD)** instructions, assuming a
 
 ## Current checkpoint — update only on verified progress
 
-**Date:** 2026-11-11 (Australia/Melbourne)  
-**Project:** PraxiLoop Harness (original Python-first engineering project)  
-**Repository:** `https://github.com/SwapnilMundhekar/PraxiLoop-Harness` (user-created and Git remote reachable, no branch refs observed at inspection)  
-**Local target:** `E:\PraxiLoop-Harness` on Windows; folder did not exist at last inspection  
-**Environment detected:** Git 2.51.0.windows.1 and Python 3.12.3; GitHub CLI not installed  
-**Phase:** Phase 1 in progress. Previously built original v0.1 source bundle with 20 local passing mock-only tests (in ChatGPT Linux environment), **not** yet imported/tested/pushed on user's Windows machine  
-**Day 1 task:** Clone the GitHub remote to `E:\PraxiLoop-Harness`, import the current v0.1 source archive, create daily log using Notepad, install/editable package in Windows venv, run tests, then create and push the first meaningful commit and verify the resulting history.  
-**Not verified/implemented:** Any E: checkout/commit/push, clean Windows test run, deployment, real model, PostgreSQL, approvals, crash recovery, MCP/DBOS, sandbox, OpenTelemetry, CI.  
-**Next engineering task after Day 1:** One small Phase 1 hardening increment with tests (e.g. GitHub Actions CI), followed by a real commit; continue toward approval-gated mock mutations and durable state.
-
-Read `PROJECT_MEMORY.md` v1.2 for details; the current Git working tree and command outputs take precedence over this snapshot.
+**Date:** 2026-11-11 (Australia/Melbourne)
+**Project:** PraxiLoop Harness — independent Python-first engineering project
+**Repository:** https://github.com/SwapnilMundhekar/PraxiLoop-Harness
+**Local repository:** `E:\PraxiLoop-Harness` — verified on connected Windows device `DESKTOP-659EDUQ`
+**Git state:** First root commit `ead1d0a4e103faab00cb33b999dddf6734e1cef0` pushed to and verified at `origin/main`
+**Windows test evidence:** Python 3.12.3; 20 passed, 1 Starlette deprecation warning, 0.27s
+**Phase:** Phase 1 in progress; initial mock-only vertical slice exists locally and on GitHub
+**Next `next` session:** Inspect current repo; implement GitHub Actions CI for Python 3.12 and pytest; verify workflow, commit, and push.
+**Not implemented:** CI, deployment, persistent/durable execution, approval-gated mutations, real model, DBOS, MCP, sandbox isolation, PostgreSQL, OpenTelemetry.
+**Continuity:** Read the latest `PROJECT_MEMORY.md` from the Git repository and reconcile with newer commits/test evidence before changing the checkpoint. Do not assume edits to this tracked file automatically update ChatGPT Project settings.
 
 Windows development environment:
 - Downloaded ZIPs: C:\Users\SSS\Downloads

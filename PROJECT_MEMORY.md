@@ -1,8 +1,8 @@
 # PraxiLoop Harness — Project Memory / Living Source of Truth
 
-**Version:** 1.2  
+**Version:** 1.3  
 **Last updated:** 2026-11-11 (Australia/Melbourne)  
-**Status:** Phase 1 in progress. Mock-only source bundle previously verified (20 local tests); GitHub remote created and reachable, but no remote branches or commits found at the start of Day 1; Windows E: working tree and push are not yet verified.  
+**Status:** Phase 1 in progress. Day 1 Windows checkout, 20 passing pytest tests and the first commit pushed to GitHub main were independently verified on 2026-11-11. No CI, deployment or durable execution yet.  
 **Project name:** PraxiLoop Harness  
 **Classification:** Portfolio / engineering learning project, independent of any earlier project
 
@@ -205,50 +205,20 @@ Discussed education options:
 
 ## 10. Current status / next action
 
-**Current checkpoint — 2026-11-11, v0.1 local scaffold:** Phase 0 scope and Phase 1 tests are documented. Phase 1 is **in progress**. An original mock-only Python implementation was generated in `praxiloop-harness/` in this conversation, with a FastAPI endpoint, typed Pydantic contracts, `ModelAdapter` Protocol and deterministic mock, allowlisted read-only `ToolRegistry`, step/reported-token/async-time limits, evidence gate, structured error codes and correlation IDs.
+**Verified checkpoint — 2026-11-11 (Australia/Melbourne):**
+- The Git repository exists on the connected Windows PC at `E:\PraxiLoop-Harness`, with `origin` set to `https://github.com/SwapnilMundhekar/PraxiLoop-Harness.git`.
+- Windows Python **3.12.3** executed `.venv\Scripts\python.exe -m pytest -q`, resulting in **20 passed, 1 Starlette TestClient deprecation warning, 0.27s**.
+- Git initial root commit **`ead1d0a4e103faab00cb33b999dddf6734e1cef0`** (`feat: bootstrap guarded onboarding harness with 20 tests`) was created and pushed successfully to **`origin/main`**. `git ls-remote --heads origin main` reported that hash.
+- Repository contains 20 tracked files: Python package, FastAPI endpoint, Pydantic contracts, guarded read-only tool registry, deterministic model adapter, tests, README, project instructions/memory and Day 1 development log.
+- The first commit was verified; any subsequent documentation-only synchronization commit must be verified separately.
 
-**Locally verified:** `PYTHONPATH=src python -m pytest -q` => **20 passed in 0.33s** (Linux container, Python 3.13.5; FastAPI 0.128.2; Pydantic 2.13.5; pytest 9.0.2; httpx 0.28.1). `python -m compileall -q src tests` passed. A source wheel built successfully using `pip wheel . --no-deps --no-build-isolation`. This is test evidence for a synthetic mock scenario, not proof of production reliability or a fresh-environment install.
+**Implemented behavior:** `POST /v1/onboarding/investigations` accepts synthetic `EMP-####` IDs, `engineering`/`finance` departments and a role; invokes only the trusted synthetic policy tool and reports `INVESTIGATED` only with matching evidence. `GET /healthz` reports mock-only mode and no persistence. Invalid/forbidden tool calls fail closed. Execution is bounded by steps, mock-reported token budget and cooperative deadline; error payloads avoid raw internal exceptions.
 
-**Implemented behavior:** `POST /v1/onboarding/investigations` accepts synthetic `EMP-####` IDs, `engineering`/`finance` departments and a role; reads only `synthetic-policy-catalog-v1`; returns `INVESTIGATED` only after matching tool evidence and explicitly reports zero side effects. `GET /healthz` reports `mock-only` and `persistence: none`. Unauthorized or malformed tool calls fail closed. Error responses do not expose internal exception details.
+**Not implemented/verified:** GitHub Actions CI, production deployment, real-model billing controls, PostgreSQL, DBOS, MCP, enterprise authentication/authorization, sandbox enforcement, durable workflow state, human approvals, mutating enterprise APIs, crash recovery, idempotency/reconciliation, independent external mutation verification, and OpenTelemetry.
 
-**Not implemented or verified:** Local E: Git working tree, first Git commit/push to the existing GitHub remote, remote deployment, real model calls or true usage-billing enforcement, databases, DBOS, MCP, authN/authZ, sandbox, audit-trail persistence, durable state, human approvals, mutating enterprise integrations, retries/idempotency/reconciliation, independent external-state verification, OpenTelemetry, CI, production load tests, or secure public operation. The local folder and generated files must be saved by the user; they do not imply changes to their computer or Project settings.
+**Next development task (next `next` session):** Add a GitHub Actions workflow that installs the package on Python 3.12 and runs `pytest` on push/PR; verify CI, document the result, and create another meaningful commit. Do not expand into privileged side effects before deterministic policy and durable state are designed.
 
-**Immediate next engineering task:** Run the Day 1 Windows CMD workflow: clone the existing empty remote into `E:\PraxiLoop-Harness`, import the tested v0.1 source bundle, perform a fresh Python 3.12 virtual-environment install, run pytest, add a concise development log, and create and push the initial real commit. Then harden Phase 1 with a dependency lock, CI, structured event logs and coverage. Then design the deterministic approval-gated mock onboarding mutation path and a durable state transition model; do **not** claim exactly-once effects or add orchestration complexity prematurely.
-
-**Implemented source layout (generated local artifact; not yet confirmed at E: or in GitHub):**
-
-```text
-praxiloop-harness/
-  README.md
-  pyproject.toml
-  .env.example
-  .gitignore
-  src/praxiloop/
-    __init__.py
-    api.py
-    contracts.py
-    errors.py
-    models.py
-    runtime.py
-    tools.py
-  tests/
-    conftest.py
-    test_api.py
-    test_runtime.py
-    test_tools.py
-  docs/
-    PHASE1_ACCEPTANCE.md
-    architecture.md
-  PROJECT_INSTRUCTIONS.md
-  PROJECT_MEMORY.md
-```
-
-### Day 1 / GitHub repository checkpoint (2026-11-11)
-
-- **Remote:** `https://github.com/SwapnilMundhekar/PraxiLoop-Harness` — supplied by user, verified reachable via Git CLI `git ls-remote` from the user's connected Windows machine; the command returned exit code 0 with no `HEAD`/`main` refs, consistent with a new empty repository. Do not report a commit or branch as existing yet.
-- **Connected device at inspection:** Windows `DESKTOP-659EDUQ`; `E:\\` is available, while `E:\\PraxiLoop-Harness` did not exist. Git 2.51.0.windows.1 and Python 3.12.3 were detected. `gh` CLI was not installed. These are point-in-time checks, not permanent guarantees.
-- **Daily protocol agreed:** The user will type `next` to request one bounded, substantive engineering increment and a real commit. Responses should give fully executable **Windows Command Prompt (CMD)** steps from `C:` to `E:`, `dir`/`cd` path checks, `notepad relative\path` for new/edited files (with full pasteable contents), virtual-env activation, tests, `git status`, `git add`, a descriptive `git commit`, `git push`, and confirmation commands. Never infer success solely from the instructions. Start by reading the current repo, Git history, and `PROJECT_MEMORY.md`; do not recreate a repo or repeat completed work.
-- **Day 1 plan:** Import the already-created original Python v0.1 scaffold into the new cloned repo, independently run its tests on Windows, manually add `docs/DEV_LOG.md` for daily change/evidence notes, and commit/push. If tests fail, correct them before committing. Do not backdate or fabricate commits.
+**Daily CMD protocol:** On each `next`, first inspect `E:\PraxiLoop-Harness` and `git status/log`, then give exact CMD steps starting from `C:`, including switching to `E:`, `cd`/`dir`, Notepad file editing when helpful, tests, staging review, commit, push and remote verification. Downloaded ZIPs land in `C:\Users\SSS\Downloads`; never assume they are in `E:`. Prefer one well-scoped, genuinely tested change per working day; no fabricated/empty commits.
 
 ## 11. Working agreement for future ChatGPT chats
 
@@ -279,11 +249,13 @@ praxiloop-harness/
 - **v1.0 — 2026-11-11:** Initial authoritative project brief reconstructed from the project's planning conversation; no implementation claims made.
 - **v1.1 — 2026-11-11:** Phase 0 scope documented; Phase 1 local source scaffold, 20 passing tests, and wheel-build evidence added. Replaced obsolete Phase 0-only status and proposed folder layout with current checkpoint. Noted unresolved capabilities and clarified that Project file/settings updates require explicit persistence.
 
-- **v1.2 — 2026-11-11:** Recorded the user-created GitHub repo and verified its empty remote state and Windows Git/Python environment. Added the repeatable one-day/one-substantive-commit protocol and Day 1 import plan. No E: checkout, commit, push, or fresh Windows test is claimed.
+- **v1.2 — 2026-11-11:** Recorded the user-created GitHub repo and verified its empty remote state and Windows Git/Python environment. Added the repeatable one-day/one-substantive-commit protocol and Day 1 import plan. No E: checkout, commit, push, or fresh Windows test was claimed at that historical snapshot.
+- **v1.3 — 2026-11-11:** Reconciled local and remote Git evidence: E: checkout verified, Python 3.12 Windows test suite passed 20 tests, initial commit ead1d0a pushed to GitHub main. Recorded next CI milestone, and corrected the current checkpoint and file location conventions.
 
-## 14. Validation and engineering cautions (v1.2)
+## 14. Validation and engineering cautions (v1.3)
 
-- Local test command: `cd praxiloop-harness && PYTHONPATH=src python -m pytest -q` → `20 passed in 0.33s` on the environment listed above. No CI or separate clean installation was executed.
+- Independent Windows validation: `E:\PraxiLoop-Harness\.venv\Scripts\python.exe -m pytest -q` → **20 passed, 1 warning in 0.27s** on Python 3.12.3. The warning refers to a Starlette TestClient deprecation.
+- Historical Linux test command: `cd praxiloop-harness && PYTHONPATH=src python -m pytest -q` → `20 passed in 0.33s` on the environment listed above. No CI or separate clean installation was executed.
 - Test suite covers the mock happy paths, request rejection, unsupported tool/name or effect, typed I/O, model adapter failure handling, finish-without-evidence, mismatched policy evidence, bounded steps, reported-token budget, cooperative deadline, and error redaction.
 - The policy tool evidence establishes only that a **trusted, locally registered synthetic policy-read function** ran. It is not independent verification of an enterprise system mutation.
 - A declared `ToolEffect.READ_ONLY` is metadata, **not** an OS-level permission boundary. Only a trusted function is registered in the slice. Formal isolation is later work.

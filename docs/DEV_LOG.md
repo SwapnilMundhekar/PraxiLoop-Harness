@@ -8,7 +8,7 @@
 
 **Windows validation:** `E:\PraxiLoop-Harness\.venv\Scripts\python.exe -m pytest -q` on Python 3.12.3 yielded **20 passed, 1 warning in 0.27s**. The warning was a Starlette TestClient deprecation regarding `httpx`; it is not a failing test.
 
-**Git evidence:** Initial commit and push to `origin/main` are to be verified independently through `git status`, `git log`, `git branch -vv`, and the GitHub repository.
+**Git evidence:** The initial root commit `ead1d0a4e103faab00cb33b999dddf6734e1cef0` was pushed successfully to `origin/main`, and `git ls-remote --heads origin main` returned the same SHA. The subsequent documentation synchronization is tracked separately.
 
 **Limitations:** No CI, persistence, durable recovery, approval workflow, real LLM usage enforcement, authentication, or production deployment.
 
