@@ -1,8 +1,8 @@
 # PraxiLoop Harness — Project Memory / Living Source of Truth
 
-**Version:** 1.3  
-**Last updated:** 2026-11-11 (Australia/Melbourne)  
-**Status:** Phase 1 in progress. Day 1 Windows checkout, 20 passing pytest tests and the first commit pushed to GitHub main were independently verified on 2026-11-11. No CI, deployment or durable execution yet.  
+**Version:** 1.4
+**Last updated:** 2026-11-12 (Australia/Melbourne)
+**Status:** Phase 1 in progress. Day 1 Git and Windows tests are verified; Day 2 GitHub Actions Python 3.12 CI workflow was added and 20 local tests passed. The GitHub-hosted workflow result must be separately verified after push; no deployment or durable execution.
 **Project name:** PraxiLoop Harness  
 **Classification:** Portfolio / engineering learning project, independent of any earlier project
 
@@ -122,7 +122,7 @@ Architectural design principles:
 | Streaming | Server-Sent Events or a justified alternative | Streaming UI events are not proof of durable execution |
 | Packaging | Docker Compose for local services | Production deployment comes after local correctness |
 
-Technology statuses as of v1.1: Python, FastAPI, Pydantic, pytest, and a provider-neutral adapter interface are **implemented and tested locally** in a generated source folder. PostgreSQL, DBOS, MCP, OpenTelemetry, streaming, sandboxing, Docker Compose and a real model adapter remain **planned/unverified**. No user-owned Git repository or deployment has been verified.
+Technology statuses as of v1.4: Python, FastAPI, Pydantic, pytest and a provider-neutral mock adapter are **implemented and tested locally**, including on Windows/Python 3.12. A user-owned GitHub repository and published commits have been verified. GitHub Actions CI configuration was added on Day 2, but an actual hosted run must be independently confirmed. PostgreSQL, DBOS, MCP, OpenTelemetry, streaming, sandboxing, Docker Compose and a real model adapter remain **planned/unverified**.
 
 ## 7. Development phases and acceptance gates
 
@@ -132,13 +132,13 @@ Technology statuses as of v1.1: Python, FastAPI, Pydantic, pytest, and a provide
 - Set up project instructions and this memory file.
 - **Exit gate:** approved scope, initial technical decisions, and Phase 1 acceptance tests written down.
 
-### Phase 1 — Minimal agent harness (IN PROGRESS: LOCAL MOCK SLICE TESTED)
+### Phase 1 — Minimal agent harness (IN PROGRESS: MOCK SLICE TESTED, CI ADDED)
 
 **Build:** Python package/repo, FastAPI endpoint, typed request/response contracts, model adapter (with mock test mode), tool registry with allowlisting and schema validation, bounded agent loop, structured errors, correlation IDs, and pytest suite.
 
 **Demonstrate:** a reproducible onboarding investigation with a deterministic/mock LLM and safe read-only tool calls. Add a real model only behind an adapter and explicit configuration.
 
-**Exit gate:** local setup works from README; normal and invalid request tests pass; invalid or forbidden tool invocations fail closed; agent loop has iteration/time/cost bounds. **Progress:** 20 pytest checks passed locally and a Python wheel built; independent fresh-environment installation, trusted live-provider usage/cost enforcement, CI and full reproducibility remain unverified. Model-reported tokens are not a real-dollar cost limit.
+**Exit gate:** local setup works from README; normal and invalid request tests pass; invalid or forbidden tool invocations fail closed; agent loop has iteration/time/cost bounds. **Progress:** 20 pytest checks passed both in a local Linux environment and on the connected Windows/Python 3.12 machine; a Python wheel was built. A GitHub Actions workflow was added for PR/push testing, while remote runner success and dependency lock remain to be verified. Live-provider usage/cost enforcement is not implemented; model-reported tokens are not a real-dollar cost limit.
 
 ### Phase 2 — Durable execution
 
@@ -205,20 +205,21 @@ Discussed education options:
 
 ## 10. Current status / next action
 
-**Verified checkpoint — 2026-11-11 (Australia/Melbourne):**
-- The Git repository exists on the connected Windows PC at `E:\PraxiLoop-Harness`, with `origin` set to `https://github.com/SwapnilMundhekar/PraxiLoop-Harness.git`.
-- Windows Python **3.12.3** executed `.venv\Scripts\python.exe -m pytest -q`, resulting in **20 passed, 1 Starlette TestClient deprecation warning, 0.27s**.
-- Git initial root commit **`ead1d0a4e103faab00cb33b999dddf6734e1cef0`** (`feat: bootstrap guarded onboarding harness with 20 tests`) was created and pushed successfully to **`origin/main`**. `git ls-remote --heads origin main` reported that hash.
-- Repository contains 20 tracked files: Python package, FastAPI endpoint, Pydantic contracts, guarded read-only tool registry, deterministic model adapter, tests, README, project instructions/memory and Day 1 development log.
-- The first commit was verified; any subsequent documentation-only synchronization commit must be verified separately.
+**Day 2 checkpoint — 2026-11-12 (Australia/Melbourne)**
 
-**Implemented behavior:** `POST /v1/onboarding/investigations` accepts synthetic `EMP-####` IDs, `engineering`/`finance` departments and a role; invokes only the trusted synthetic policy tool and reports `INVESTIGATED` only with matching evidence. `GET /healthz` reports mock-only mode and no persistence. Invalid/forbidden tool calls fail closed. Execution is bounded by steps, mock-reported token budget and cooperative deadline; error payloads avoid raw internal exceptions.
+- **Local source:** `E:\PraxiLoop-Harness` on connected Windows device `DESKTOP-659EDUQ`. Initial Python/FastAPI + mock agent tool registry, bounded execution, evidence gate and tests are present.
+- **Day 1 Git evidence:** Two commits were independently verified on remote `main`: `ead1d0a4e103faab00cb33b999dddf6734e1cef0` (initial 20-test Python harness) and `7744b9fb376a40f7fc0099a05eb2d9a524d8f44a` (Day 1 verification documentation). Entering Day 2, the working tree was clean.
+- **Day 2 engineering change:** Added `.github/workflows/ci.yml`: GitHub Actions job triggered on `push`/`pull_request` to `main` and `workflow_dispatch`; Python 3.12 on `ubuntu-24.04`; install `.[dev]` and run pytest. Token permissions are limited to `contents: read`, checkout credentials are not persisted, and the job timeout is 10 minutes. Uses official `actions/checkout@v7` and `actions/setup-python@v7` major references.
+- **Local Day 2 test evidence:** Windows Python 3.12.3 `.venv\Scripts\python.exe -m pytest -q` returned **20 passed, 1 known Starlette TestClient deprecation warning, in 0.85s**. GitHub-hosted runner execution is distinct evidence that must be verified after push; do not claim a green CI check solely from this local result.
+- **Progress classification:** Workflow configuration implemented locally, local tests passed; remote CI status to be reconciled with GitHub Actions in the next checkpoint.
 
-**Not implemented/verified:** GitHub Actions CI, production deployment, real-model billing controls, PostgreSQL, DBOS, MCP, enterprise authentication/authorization, sandbox enforcement, durable workflow state, human approvals, mutating enterprise APIs, crash recovery, idempotency/reconciliation, independent external mutation verification, and OpenTelemetry.
+**Existing API behavior:** `POST /v1/onboarding/investigations` accepts synthetic employee IDs and department/role, invokes only the trusted synthetic policy tool, and marks `INVESTIGATED` only with matching tool evidence. `GET /healthz` reports mock-only and no persistence. Tool calls fail closed on unsupported/forbidden actions; runtime limits and structured redacted errors are present. There are no live model calls or enterprise side effects.
 
-**Next development task (next `next` session):** Add a GitHub Actions workflow that installs the package on Python 3.12 and runs `pytest` on push/PR; verify CI, document the result, and create another meaningful commit. Do not expand into privileged side effects before deterministic policy and durable state are designed.
+**Not implemented/verified:** Production deployment or authentication, PostgreSQL, DBOS/MCP, sandbox isolation, durable workflow recovery, human approval for privileged actions, simulated provisioning with idempotency/reconciliation, independent external-state verification, telemetry and true model-cost enforcement. Third-party Actions pinned to major tags are not immutable commit-SHA references; evaluate SHA pinning and lockfile when hardening supply-chain reproducibility.
 
-**Daily CMD protocol:** On each `next`, first inspect `E:\PraxiLoop-Harness` and `git status/log`, then give exact CMD steps starting from `C:`, including switching to `E:`, `cd`/`dir`, Notepad file editing when helpful, tests, staging review, commit, push and remote verification. Downloaded ZIPs land in `C:\Users\SSS\Downloads`; never assume they are in `E:`. Prefer one well-scoped, genuinely tested change per working day; no fabricated/empty commits.
+**Next engineering task (Day 3 `next`):** Check latest `origin/main` and GitHub Actions job result, address CI errors if any, then make one small tested runtime or tool-gateway improvement and one commit. Never backdate, fabricate, or submit empty commits solely to fill the contribution calendar.
+
+**Daily Windows protocol:** Start in CMD with `C:`, transition to `E:` and `cd \PraxiLoop-Harness`, inspect `dir`, `git status`, `git log`; show each new or edited file with `notepad path` and complete contents when user is doing the edit; test, stage with reviewed diff, commit once, push and verify `git ls-remote` plus clean status. Downloads default to `C:\Users\SSS\Downloads`. If direct remote execution is authorized and connected, perform it and still give a short CMD replay/verification recipe.
 
 ## 11. Working agreement for future ChatGPT chats
 
@@ -251,11 +252,12 @@ Discussed education options:
 
 - **v1.2 — 2026-11-11:** Recorded the user-created GitHub repo and verified its empty remote state and Windows Git/Python environment. Added the repeatable one-day/one-substantive-commit protocol and Day 1 import plan. No E: checkout, commit, push, or fresh Windows test was claimed at that historical snapshot.
 - **v1.3 — 2026-11-11:** Reconciled local and remote Git evidence: E: checkout verified, Python 3.12 Windows test suite passed 20 tests, initial commit ead1d0a pushed to GitHub main. Recorded next CI milestone, and corrected the current checkpoint and file location conventions.
+- **v1.4 — 2026-11-12:** Day 2 adds GitHub Actions CI workflow (Python 3.12, pytest, read-only token), an updated development log/README and refreshed checkpoints. Confirmed the 20-test suite passes on Windows. Cloud-hosted workflow result and today's push must be independently checked; this file documents the implementation state at time of writing.
 
-## 14. Validation and engineering cautions (v1.3)
+## 14. Validation and engineering cautions (v1.4)
 
 - Independent Windows validation: `E:\PraxiLoop-Harness\.venv\Scripts\python.exe -m pytest -q` → **20 passed, 1 warning in 0.27s** on Python 3.12.3. The warning refers to a Starlette TestClient deprecation.
-- Historical Linux test command: `cd praxiloop-harness && PYTHONPATH=src python -m pytest -q` → `20 passed in 0.33s` on the environment listed above. No CI or separate clean installation was executed.
+- Historical Linux test command: `cd praxiloop-harness && PYTHONPATH=src python -m pytest -q` → `20 passed in 0.33s` on the environment listed above. The GitHub Actions CI workflow is configured on Day 2; remote runner results must be checked independently.
 - Test suite covers the mock happy paths, request rejection, unsupported tool/name or effect, typed I/O, model adapter failure handling, finish-without-evidence, mismatched policy evidence, bounded steps, reported-token budget, cooperative deadline, and error redaction.
 - The policy tool evidence establishes only that a **trusted, locally registered synthetic policy-read function** ran. It is not independent verification of an enterprise system mutation.
 - A declared `ToolEffect.READ_ONLY` is metadata, **not** an OS-level permission boundary. Only a trusted function is registered in the slice. Formal isolation is later work.

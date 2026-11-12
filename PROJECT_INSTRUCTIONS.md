@@ -47,16 +47,17 @@ Give the user **complete Windows Command Prompt (CMD)** instructions, assuming a
 
 ## Current checkpoint — update only on verified progress
 
-**Date:** 2026-11-11 (Australia/Melbourne)
-**Project:** PraxiLoop Harness — independent Python-first engineering project
-**Repository:** https://github.com/SwapnilMundhekar/PraxiLoop-Harness
-**Local repository:** `E:\PraxiLoop-Harness` — verified on connected Windows device `DESKTOP-659EDUQ`
-**Git state:** First root commit `ead1d0a4e103faab00cb33b999dddf6734e1cef0` pushed to and verified at `origin/main`
-**Windows test evidence:** Python 3.12.3; 20 passed, 1 Starlette deprecation warning, 0.27s
-**Phase:** Phase 1 in progress; initial mock-only vertical slice exists locally and on GitHub
-**Next `next` session:** Inspect current repo; implement GitHub Actions CI for Python 3.12 and pytest; verify workflow, commit, and push.
-**Not implemented:** CI, deployment, persistent/durable execution, approval-gated mutations, real model, DBOS, MCP, sandbox isolation, PostgreSQL, OpenTelemetry.
-**Continuity:** Read the latest `PROJECT_MEMORY.md` from the Git repository and reconcile with newer commits/test evidence before changing the checkpoint. Do not assume edits to this tracked file automatically update ChatGPT Project settings.
+**Date:** 2026-11-12 (Australia/Melbourne)
+**Project:** PraxiLoop Harness — Python-first enterprise agent harness
+**Repo:** https://github.com/SwapnilMundhekar/PraxiLoop-Harness
+**Local:** `E:\PraxiLoop-Harness`, Windows CMD, Python 3.12.3
+**Last fully verified remote checkpoint entering Day 2:** `7744b9fb376a40f7fc0099a05eb2d9a524d8f44a` on `origin/main`, clean working tree.
+**Day 2 change:** Added `.github/workflows/ci.yml` with GitHub-hosted Python 3.12 pytest for pushes/PRs to main, manually dispatched runs, least-privilege token permissions and no stored checkout credentials.
+**Local validation:** 20 pytest tests passed on Windows/Python 3.12.3; one existing Starlette TestClient deprecation warning. Cloud CI run status must be inspected after push, not inferred from local tests.
+**Phase:** Phase 1 in progress. CI is a quality gate, not proof of production-grade safety.
+**Next `next` session:** Reconcile `git log` and the Actions run; introduce one small, tested contract/tool-gateway hardening increment; make exactly one meaningful commit for the day.
+**Outstanding:** GitHub CI remote-run verification at time of writing; dependency lock, structured event telemetry, real model control, PostgreSQL, DBOS/MCP, sandbox, approvals, mutation verification, durability and deployment.
+**Persistence:** Git-tracked `PROJECT_MEMORY.md` is authoritative for code progress. Changes to it or to this file do NOT automatically update the ChatGPT Project uploaded files/settings; provide replacement only when asked or use a supported project-file operation.
 
 Windows development environment:
 - Downloaded ZIPs: C:\Users\SSS\Downloads

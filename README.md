@@ -19,7 +19,13 @@ python -m pip install -e '.[dev]'
 python -m pytest -q
 ```
 
-The source was locally exercised with Python 3.13.5, FastAPI 0.128.2, Pydantic 2.13.5, httpx 0.28.1, and pytest 9.0.2. Project dependencies are compatible ranges, **not a fully locked dependency graph**; reproducibility on fresh platforms is not yet verified.
+The source has been tested locally on Linux/Python 3.13.5 and Windows/Python 3.12.3 (20 passing tests in both environments). Project dependencies are compatible ranges, **not a locked dependency graph**; reproducibility across fresh environments and new dependency releases requires additional validation.
+
+## Continuous integration
+
+`.github/workflows/ci.yml` runs on pushes to `main`, pull requests targeting `main`, and manual dispatch. The `Python CI` job uses an Ubuntu 24.04 runner, Python 3.12, and `python -m pip install -e ".[dev]"` followed by `python -m pytest -q`.
+
+The workflow has **read-only repository permissions**, does not persist checkout credentials, and requires no cloud or enterprise secrets. A passing CI run establishes the test suite passes in that runner environment; it does **not** establish production safety, deterministic dependency resolution, or durable workflows. Review the run at [GitHub Actions](https://github.com/SwapnilMundhekar/PraxiLoop-Harness/actions); whether the hosted job has passed must be verified separately.
 
 ## Start API
 
