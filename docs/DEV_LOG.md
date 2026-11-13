@@ -1,5 +1,20 @@
 # PraxiLoop Harness — Development Log
 
+## 2026-11-13 — Day 3: Pre-execution tool authorization
+
+**Goal:** Deny a model-proposed read for another department **before** the tool handler executes.
+
+**Code:** Added `ToolExecutionContext` constructed by the runner from the validated onboarding request. Every registered tool has an explicit authorization callback. `ToolRegistry.invoke` validates model arguments and checks permission before calling the handler; missing, failing, or non-`True` policy decisions deny execution. Existing post-execution evidence validation remains.
+
+**Tests:** Seven new regression tests cover cross-department denial without handler execution, success for in-scope reads, authorization exceptions, missing policy, truthy non-boolean returns, missing context, mismatched returned evidence, and API error handling (some scenarios tested within one test). Windows/Python 3.12.3: **27 passed, 1 existing Starlette TestClient deprecation warning, 0.30s**; `compileall` also passed.
+
+**CI checkpoint:** The previous GitHub Actions run for Day 2 commit `0d43c24` passed: https://github.com/SwapnilMundhekar/PraxiLoop-Harness/actions/runs/43210553987. The Day 3 run must be checked after push.
+
+**Limitation:** No user authentication. A caller can choose any supported department; request-scope validation prevents model drift but is not tenant authorization. No external mutations, persistence or OS sandbox exist yet.
+
+**Next session:** Confirm this commit's cloud CI and implement one focused hardening increment with tests and a new daily commit.
+
+
 ## 2026-11-12 — Day 2: Python CI quality gate
 
 **Objective:** Run the existing pytest regression suite automatically for changes pushed or proposed to `main`.

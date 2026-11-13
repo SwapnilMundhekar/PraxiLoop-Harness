@@ -116,3 +116,18 @@ def test_malformed_employee_id_is_rejected() -> None:
             "/v1/onboarding/investigations", json={**VALID_REQUEST, "employee_id": "john@example.com"}
         )
     assert response.status_code == 422
+
+def test_model_cannot_read_another_departments_policy() -> None:
+    model = ScriptedModel(
+        [
+            ToolCall(
+                name="read_onboarding_policy",
+                arguments={"department": "finance"},
+                reported_tokens=1,
+            )
+        ]
+    )
+    with TestClient(create_app(model=model)) as client:
+        response = client.post("/v1/onboarding/investigations", json=VALID_REQUEST)
+    assert response.status_code == 502
+    assert response.json()["detail"]["code"] == "FORBIDDEN_TOOL"

@@ -14,7 +14,7 @@ from praxiloop.contracts import (
 )
 from praxiloop.errors import DeadlineExceeded, LimitExceeded, ModelProtocolError
 from praxiloop.models import ModelAdapter
-from praxiloop.tools import ToolRegistry
+from praxiloop.tools import ToolExecutionContext, ToolRegistry
 
 
 @dataclass(frozen=True, slots=True)
@@ -50,6 +50,7 @@ class AgentRunner:
         self, request: InvestigationRequest, correlation_id: str
     ) -> InvestigationResponse:
         observations: list[ToolObservation] = []
+        context = ToolExecutionContext(department=request.department)
         evidence: PolicyEvidence | None = None
         reported_tokens = 0
 
@@ -66,7 +67,7 @@ class AgentRunner:
                 raise LimitExceeded("Model token budget exceeded")
 
             if isinstance(action, ToolCall):
-                output = await self._tools.invoke(action.name, action.arguments)
+                output = await self._tools.invoke(action.name, action.arguments, context=context)
                 observations.append(
                     ToolObservation(name=action.name, output=output.model_dump(mode="json"))
                 )

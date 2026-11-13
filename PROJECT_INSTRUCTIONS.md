@@ -47,17 +47,16 @@ Give the user **complete Windows Command Prompt (CMD)** instructions, assuming a
 
 ## Current checkpoint — update only on verified progress
 
-**Date:** 2026-11-12 (Australia/Melbourne)
-**Project:** PraxiLoop Harness — Python-first enterprise agent harness
-**Repo:** https://github.com/SwapnilMundhekar/PraxiLoop-Harness
-**Local:** `E:\PraxiLoop-Harness`, Windows CMD, Python 3.12.3
-**Last fully verified remote checkpoint entering Day 2:** `7744b9fb376a40f7fc0099a05eb2d9a524d8f44a` on `origin/main`, clean working tree.
-**Day 2 change:** Added `.github/workflows/ci.yml` with GitHub-hosted Python 3.12 pytest for pushes/PRs to main, manually dispatched runs, least-privilege token permissions and no stored checkout credentials.
-**Local validation:** 20 pytest tests passed on Windows/Python 3.12.3; one existing Starlette TestClient deprecation warning. Cloud CI run status must be inspected after push, not inferred from local tests.
-**Phase:** Phase 1 in progress. CI is a quality gate, not proof of production-grade safety.
-**Next `next` session:** Reconcile `git log` and the Actions run; introduce one small, tested contract/tool-gateway hardening increment; make exactly one meaningful commit for the day.
-**Outstanding:** GitHub CI remote-run verification at time of writing; dependency lock, structured event telemetry, real model control, PostgreSQL, DBOS/MCP, sandbox, approvals, mutation verification, durability and deployment.
-**Persistence:** Git-tracked `PROJECT_MEMORY.md` is authoritative for code progress. Changes to it or to this file do NOT automatically update the ChatGPT Project uploaded files/settings; provide replacement only when asked or use a supported project-file operation.
+**Date:** 2026-11-13 (Australia/Melbourne)
+**Project:** PraxiLoop Harness — Python-first enterprise AI agent harness
+**Repository:** https://github.com/SwapnilMundhekar/PraxiLoop-Harness
+**Local checkout:** `E:\PraxiLoop-Harness`, Windows CMD, Python 3.12.3
+**Last confirmed GitHub baseline entering Day 3:** `0d43c24d842e62b50faab70c46389dfebee60f3c` on `origin/main`, GitHub Actions run `43210553987` completed with success.
+**Day 3 implementation:** The runner passes `ToolExecutionContext` from the validated request to each tool call. Every registered tool requires a trusted authorizer; model-proposed arguments are checked **before handler execution**. The evidence match after execution remains. Missing, failing and non-`True` authorization decisions are denied.
+**Day 3 test evidence:** 27 pytest tests passed on Windows/Python 3.12.3; one known Starlette TestClient deprecation warning. Verify Day 3 Git push and new GitHub Actions job independently from local evidence.
+**Phase:** Phase 1 in progress; this is request-level consistency, not user/tenant authorization. The API is unauthenticated. No database, durable execution, approval-gated mutations, external state verification or production deployment.
+**Next `next` session:** Reconcile the current Git SHA, working tree, GitHub Actions result, and `PROJECT_MEMORY.md` v1.5. Implement one small, tested engineering increment and exactly one real commit for the day.
+**Project-setting limitation:** Tracked memory and instruction files are updated in Git, but ChatGPT Project settings and previously uploaded attachments are not automatically replaced.
 
 Windows development environment:
 - Downloaded ZIPs: C:\Users\SSS\Downloads

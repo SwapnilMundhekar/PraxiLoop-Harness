@@ -19,13 +19,13 @@ python -m pip install -e '.[dev]'
 python -m pytest -q
 ```
 
-The source has been tested locally on Linux/Python 3.13.5 and Windows/Python 3.12.3 (20 passing tests in both environments). Project dependencies are compatible ranges, **not a locked dependency graph**; reproducibility across fresh environments and new dependency releases requires additional validation.
+The original source passed 20 tests on Linux/Python 3.13.5 and Windows/Python 3.12.3. Day 3 expanded the Windows/Python 3.12.3 suite to **27 passing tests**. Dependencies are compatible ranges, **not a locked dependency graph**; reproducibility across fresh environments and new releases requires additional validation.
 
 ## Continuous integration
 
 `.github/workflows/ci.yml` runs on pushes to `main`, pull requests targeting `main`, and manual dispatch. The `Python CI` job uses an Ubuntu 24.04 runner, Python 3.12, and `python -m pip install -e ".[dev]"` followed by `python -m pytest -q`.
 
-The workflow has **read-only repository permissions**, does not persist checkout credentials, and requires no cloud or enterprise secrets. A passing CI run establishes the test suite passes in that runner environment; it does **not** establish production safety, deterministic dependency resolution, or durable workflows. Review the run at [GitHub Actions](https://github.com/SwapnilMundhekar/PraxiLoop-Harness/actions); whether the hosted job has passed must be verified separately.
+The workflow has **read-only repository permissions**, does not persist checkout credentials, and requires no cloud or enterprise secrets. A passing CI run establishes the test suite passes in that runner environment; it does **not** establish production safety, deterministic dependency resolution, or durable workflows. Review the run at [GitHub Actions](https://github.com/SwapnilMundhekar/PraxiLoop-Harness/actions); the Day 2 hosted run for commit `0d43c24` **completed successfully** ([run evidence](https://github.com/SwapnilMundhekar/PraxiLoop-Harness/actions/runs/43210553987)); newer runs require independent verification.
 
 ## Start API
 
@@ -47,6 +47,8 @@ Expected: status `INVESTIGATED`, policy evidence from `synthetic-policy-catalog-
 
 - Only the trusted read-only `read_onboarding_policy` implementation is allowlisted. Unknown or declared-mutating tools fail closed; effect metadata alone is **not** a sandbox.
 - Incoming request fields, model-chosen tool arguments, and tool output use Pydantic validation.
+- **Day 3:** Every registered tool requires a trusted authorizer. The runner supplies `ToolExecutionContext` from the validated request; the registry checks arguments and authorization **before calling the handler**. A mismatched department or failed/missing policy fails closed. The post-execution evidence check remains.
+- Request-scope checks are **not user authorization**. This unauthenticated API allows a caller to select either department; future identity/tenant policy and resource-level access control are required.
 - Execution has a model-step limit, model-reported token limit, and cooperative asyncio timeout.
 - **No authentication** or authorization of requesters; bind locally and never expose this demo to a public network.
 - **No durable state** and **no real external action**. Do not confuse this with crash recovery, approval management, access provisioning, exactly-once semantics, or independent verification of real enterprise system effects.
@@ -54,7 +56,7 @@ Expected: status `INVESTIGATED`, policy evidence from `synthetic-policy-catalog-
 
 ## Next engineering tasks
 
-1. Harden contracts and tests: permission/context validation, structured logs, CI, a dependency lock, failure injections.
+1. Continue Phase 1 hardening: authenticated caller context, structured audit logs, a dependency lock, fault injection and broader CI coverage. Basic request-scope validation and CI already exist.
 2. Introduce a deterministic onboarding workflow state machine using a mock provisioner; require an approval record before any simulated write.
 3. Add PostgreSQL persistence and idempotent outbox/reconciliation before retrying ambiguous external effects. Evaluate DBOS against a simple explicit state machine with evidence.
 

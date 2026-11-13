@@ -3,10 +3,25 @@ from collections.abc import Sequence
 
 import pytest
 
-from praxiloop.contracts import Finish, InvestigationRequest, ToolCall, ToolObservation
-from praxiloop.errors import DeadlineExceeded, LimitExceeded, ModelProtocolError
+from pydantic import BaseModel
+
+from praxiloop.contracts import (
+    Finish,
+    InvestigationRequest,
+    PolicyEvidence,
+    PolicyLookupArguments,
+    ToolCall,
+    ToolObservation,
+)
+from praxiloop.errors import DeadlineExceeded, ForbiddenTool, LimitExceeded, ModelProtocolError
 from praxiloop.runtime import AgentRunner, RunLimits
-from praxiloop.tools import build_readonly_registry
+from praxiloop.tools import (
+    ToolDefinition,
+    ToolEffect,
+    ToolRegistry,
+    authorize_policy_lookup,
+    build_readonly_registry,
+)
 from conftest import ScriptedModel
 
 
@@ -17,7 +32,13 @@ REQUEST = InvestigationRequest(
 
 def test_max_step_limit_prevents_unbounded_model_tool_loop() -> None:
     repeating_model = ScriptedModel(
-        [ToolCall(name="read_onboarding_policy", arguments={"department": "engineering"}, reported_tokens=1)]
+        [
+            ToolCall(
+                name="read_onboarding_policy",
+                arguments={"department": "engineering"},
+                reported_tokens=1,
+            )
+        ]
     )
     runner = AgentRunner(repeating_model, build_readonly_registry(), RunLimits(max_model_steps=2))
     with pytest.raises(LimitExceeded, match="step"):
@@ -34,12 +55,12 @@ def test_reported_token_budget_enforced() -> None:
         asyncio.run(runner.investigate(REQUEST))
 
 
-def test_policy_result_for_wrong_department_fails_closed() -> None:
+def test_model_cross_department_policy_read_is_denied_at_gateway() -> None:
     model = ScriptedModel(
         [ToolCall(name="read_onboarding_policy", arguments={"department": "finance"}, reported_tokens=1)]
     )
     runner = AgentRunner(model, build_readonly_registry(), RunLimits())
-    with pytest.raises(ModelProtocolError, match="match"):
+    with pytest.raises(ForbiddenTool, match="scope"):
         asyncio.run(runner.investigate(REQUEST))
 
 
@@ -55,4 +76,38 @@ def test_wall_clock_deadline_is_enforced_for_cooperative_adapter() -> None:
         SlowModel(), build_readonly_registry(), RunLimits(timeout_seconds=0.001)
     )
     with pytest.raises(DeadlineExceeded):
+        asyncio.run(runner.investigate(REQUEST))
+
+def test_wrong_policy_output_is_still_rejected_after_authorized_read() -> None:
+    async def wrong_department_evidence(_: BaseModel) -> PolicyEvidence:
+        return PolicyEvidence(
+            source="synthetic-policy-catalog-v1",
+            department="finance",
+            required_training=["finance-data-handling"],
+            suggested_equipment=["laptop"],
+            access_requires_approval=True,
+        )
+
+    registry = ToolRegistry(allowed_names=frozenset({"read_onboarding_policy"}))
+    registry.register(
+        ToolDefinition(
+            name="read_onboarding_policy",
+            effect=ToolEffect.READ_ONLY,
+            arguments_model=PolicyLookupArguments,
+            result_model=PolicyEvidence,
+            handler=wrong_department_evidence,
+            authorizer=authorize_policy_lookup,
+        )
+    )
+    model = ScriptedModel(
+        [
+            ToolCall(
+                name="read_onboarding_policy",
+                arguments={"department": "engineering"},
+                reported_tokens=1,
+            )
+        ]
+    )
+    runner = AgentRunner(model, registry, RunLimits())
+    with pytest.raises(ModelProtocolError, match="match"):
         asyncio.run(runner.investigate(REQUEST))
