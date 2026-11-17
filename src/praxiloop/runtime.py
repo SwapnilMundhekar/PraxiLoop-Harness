@@ -50,7 +50,9 @@ class AgentRunner:
         self, request: InvestigationRequest, correlation_id: str
     ) -> InvestigationResponse:
         observations: list[ToolObservation] = []
-        context = ToolExecutionContext(department=request.department)
+        context = ToolExecutionContext(
+            department=request.department, correlation_id=correlation_id
+        )
         evidence: PolicyEvidence | None = None
         reported_tokens = 0
 

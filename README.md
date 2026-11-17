@@ -27,6 +27,12 @@ The original source passed 20 tests on Linux/Python 3.13.5 and Windows/Python 3.
 
 The workflow has **read-only repository permissions**, does not persist checkout credentials, and requires no cloud or enterprise secrets. A passing CI run establishes the test suite passes in that runner environment; it does **not** establish production safety, deterministic dependency resolution, or durable workflows. Review the run at [GitHub Actions](https://github.com/SwapnilMundhekar/PraxiLoop-Harness/actions); the Day 2 hosted run for commit `0d43c24` **completed successfully** ([run evidence](https://github.com/SwapnilMundhekar/PraxiLoop-Harness/actions/runs/43210553987)); newer runs require independent verification.
 
+## Tool authorization audit events (Day 4)
+
+The `praxiloop.tool_audit` Python logger emits a structured `tool_authorization` record when the registry allows or denies a tool call. Each record has `audit_event`, `correlation_id`, trusted `tool_name`, `decision` and `reason_code` fields. Allowed decisions use INFO and denied decisions use WARNING. Unknown model-supplied tool names are replaced by `unregistered`; model arguments, employee IDs, and exception text are **not** logged.
+
+The runner passes its generated correlation ID into the tool context, allowing an API response header to be matched with tool policy events. INFO logging requires an appropriately configured logger/handler; this prototype does not configure centralized collection, durable storage, retention, redaction in third-party handlers or tamper protection. These events are **diagnostic log records, not an authoritative audit trail**.
+
 ## Start API
 
 ```bash

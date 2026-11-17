@@ -1,5 +1,6 @@
 """Enforced, typed, read-only tool registry (no executable model-supplied code)."""
 
+import logging
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from enum import Enum
@@ -8,6 +9,9 @@ from pydantic import BaseModel, ValidationError
 
 from praxiloop.contracts import Department, PolicyEvidence, PolicyLookupArguments
 from praxiloop.errors import ForbiddenTool, InvalidToolArguments, ToolExecutionFailed
+
+
+_AUDIT_LOGGER = logging.getLogger("praxiloop.tool_audit")
 
 
 class ToolEffect(str, Enum):
@@ -20,6 +24,7 @@ class ToolExecutionContext:
     """Trusted request scope supplied by the harness, not by the model."""
 
     department: Department
+    correlation_id: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -39,6 +44,27 @@ class ToolRegistry:
         self._allowed_names = allowed_names
         self._tools: dict[str, ToolDefinition] = {}
 
+    @staticmethod
+    def _audit(
+        context: ToolExecutionContext,
+        tool_name: str,
+        decision: str,
+        reason_code: str,
+    ) -> None:
+        """Emit only trusted metadata; never log raw model arguments or exception text."""
+        level = logging.INFO if decision == "allowed" else logging.WARNING
+        _AUDIT_LOGGER.log(
+            level,
+            "tool_authorization",
+            extra={
+                "audit_event": "tool_authorization",
+                "correlation_id": context.correlation_id,
+                "tool_name": tool_name,
+                "decision": decision,
+                "reason_code": reason_code,
+            },
+        )
+
     def register(self, definition: ToolDefinition) -> None:
         if definition.name not in self._allowed_names or definition.effect != ToolEffect.READ_ONLY:
             raise ForbiddenTool("Tool registration denied")
@@ -52,21 +78,28 @@ class ToolRegistry:
         self, name: str, raw_arguments: dict[str, object], *, context: ToolExecutionContext
     ) -> BaseModel:
         if name not in self._allowed_names or name not in self._tools:
+            # Unknown names are model-supplied; avoid logging untrusted tool-name text.
+            self._audit(context, "unregistered", "denied", "unregistered_tool")
             raise ForbiddenTool("Tool invocation denied")
         definition = self._tools[name]
         if definition.effect != ToolEffect.READ_ONLY:
+            self._audit(context, definition.name, "denied", "mutating_tool")
             raise ForbiddenTool("Mutating tool denied")
         try:
             args = definition.arguments_model.model_validate(raw_arguments)
         except ValidationError as exc:
+            self._audit(context, definition.name, "denied", "invalid_arguments")
             raise InvalidToolArguments("Invalid tool input schema") from exc
         # Authorize *validated arguments* before invoking an external/read-only handler.
         try:
             authorized = definition.authorizer(args, context)
         except Exception as exc:
+            self._audit(context, definition.name, "denied", "authorizer_error")
             raise ForbiddenTool("Tool authorization policy failed") from exc
         if authorized is not True:
+            self._audit(context, definition.name, "denied", "scope_denied")
             raise ForbiddenTool("Tool invocation outside request scope")
+        self._audit(context, definition.name, "allowed", "scope_authorized")
         try:
             result = await definition.handler(args)
             return definition.result_model.model_validate(result)

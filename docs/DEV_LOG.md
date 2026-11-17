@@ -1,5 +1,20 @@
 # PraxiLoop Harness — Development Log
 
+## 2026-11-17 — Day 4: Correlated, privacy-conscious tool authorization events
+
+**Goal:** Make model-driven tool authorization decisions observable without logging raw tool arguments, employee identifiers, or policy exceptions.
+
+**Change:** Added Python logging events on the `praxiloop.tool_audit` logger. Each authorization decision emits fixed metadata fields (`audit_event`, `correlation_id`, trusted `tool_name`, `decision`, `reason_code`). Allowed reads are INFO; denied reads are WARNING. Unregistered model-supplied names are replaced with a fixed `unregistered` marker. The runner passes the HTTP correlation ID through the trusted tool context.
+
+**Local evidence:** Python 3.12.3 on Windows: six new tests verify allowed/denied events, sensitive-value exclusion, unknown-name log injection, invalid arguments, authorizer errors, and API-to-tool correlation. Baseline 27 tests grew to **33 passing tests**; one existing Starlette TestClient deprecation warning. Compile check passed.
+
+**Hosted CI:** Day 3 commit `db769bb` had a successful hosted run (https://github.com/SwapnilMundhekar/PraxiLoop-Harness/actions/runs/43422099673). Day 4 CI outcome must be checked after push.
+
+**Limitations:** Logging is not guaranteed persistence or tamper-proof auditing. INFO events require configured log levels/handlers. There is no authentication, cross-tenant access enforcement, immutable audit storage or OpenTelemetry trace pipeline.
+
+**Next session:** Confirm this commit's GitHub Actions result. Test one more critical boundary, ideally explicit authenticated principal contracts or a well-defined deterministic workflow state machine before introducing mutations.
+
+
 ## 2026-11-13 — Day 3: Pre-execution tool authorization
 
 **Goal:** Deny a model-proposed read for another department **before** the tool handler executes.

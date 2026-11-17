@@ -47,16 +47,16 @@ Give the user **complete Windows Command Prompt (CMD)** instructions, assuming a
 
 ## Current checkpoint — update only on verified progress
 
-**Date:** 2026-11-13 (Australia/Melbourne)
+**Date:** 2026-11-17 (Australia/Melbourne)
 **Project:** PraxiLoop Harness — Python-first enterprise AI agent harness
-**Repository:** https://github.com/SwapnilMundhekar/PraxiLoop-Harness
+**GitHub repository:** https://github.com/SwapnilMundhekar/PraxiLoop-Harness
 **Local checkout:** `E:\PraxiLoop-Harness`, Windows CMD, Python 3.12.3
-**Last confirmed GitHub baseline entering Day 3:** `0d43c24d842e62b50faab70c46389dfebee60f3c` on `origin/main`, GitHub Actions run `43210553987` completed with success.
-**Day 3 implementation:** The runner passes `ToolExecutionContext` from the validated request to each tool call. Every registered tool requires a trusted authorizer; model-proposed arguments are checked **before handler execution**. The evidence match after execution remains. Missing, failing and non-`True` authorization decisions are denied.
-**Day 3 test evidence:** 27 pytest tests passed on Windows/Python 3.12.3; one known Starlette TestClient deprecation warning. Verify Day 3 Git push and new GitHub Actions job independently from local evidence.
-**Phase:** Phase 1 in progress; this is request-level consistency, not user/tenant authorization. The API is unauthenticated. No database, durable execution, approval-gated mutations, external state verification or production deployment.
-**Next `next` session:** Reconcile the current Git SHA, working tree, GitHub Actions result, and `PROJECT_MEMORY.md` v1.5. Implement one small, tested engineering increment and exactly one real commit for the day.
-**Project-setting limitation:** Tracked memory and instruction files are updated in Git, but ChatGPT Project settings and previously uploaded attachments are not automatically replaced.
+**Entering Day 4:** clean Git `main`, last commit `db769bb726e525e521fd1cdc94461121a20a8e33`, verified Day 3 GitHub Actions run `43422099673` passed.
+**Day 4 work:** Implemented correlation-linked authorization decision log records with `praxiloop.tool_audit` (trusted tool name, fixed decision/reason codes, no raw model arguments or exception data). The runtime propagates generated correlation IDs into the tool context. Six new tests increased Windows Python 3.12 suite to **33 passing tests**.
+**Verification still required:** Check Day 4 Git commit/push and its GitHub Actions result against the actual remote. Treat local code/test evidence separately from hosted CI.
+**Architecture state:** Phase 1 in progress, safe mock-only read-only tool gateway with request-scope authorization and diagnostic decision logging. Not authenticated user authorization, persistent audit storage, OpenTelemetry, durable workflows or approved real-world side effects.
+**Next `next` session:** Reconcile latest remote commit, working-tree status and CI; implement one focused, tested improvement (e.g., trusted authenticated-caller context or deterministic workflow transitions), commit once, push and independently verify.
+**Source of truth:** The full `PROJECT_MEMORY.md` v1.6 tracked in Git. Changes to this tracked file and `PROJECT_INSTRUCTIONS.md` do not automatically replace ChatGPT Project attachments/settings.
 
 Windows development environment:
 - Downloaded ZIPs: C:\Users\SSS\Downloads
