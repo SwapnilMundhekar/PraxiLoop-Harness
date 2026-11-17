@@ -1,5 +1,20 @@
 # PraxiLoop Harness — Development Log
 
+## 2026-11-17 — Additional session: Independent tool-call execution budget
+
+**Calendar note:** This is a second meaningful development session on 17 November, following the already-published Day 4 observability commit; no date has been changed or backdated.
+
+**Objective:** Prevent excessive model-driven tool invocations independently of the configured model-step limit, and reject invalid execution limits at configuration time.
+
+**Implementation:** `RunLimits` gains `max_tool_calls=2` (appended for positional compatibility); the runner tracks attempted tool calls per investigation and raises `LimitExceeded` **before the excess handler executes**. Count limits are required to be positive non-boolean integers. Cooperative timeout must be a positive finite number; `NaN`, infinities, strings, bools and oversized unrepresentable integers are rejected. The existing model-step and reported-token controls remain.
+
+**Windows validation:** Python 3.12.3; original 33 tests plus 18 new checks in `tests/test_limits.py` = **51 passed**, with one existing Starlette TestClient deprecation warning. Coverage includes blocked third call, normal one-call completion, API fail-closed error, independent budgets under concurrent investigations and parametrized malformed configs. Final CI must be checked after push.
+
+**Important limitations:** Counts do not bound provider billing, enforce a hard OS kill, or prove exactly-once side effects. Cancellation remains cooperative. The mock-only read-only workflow has no real enterprise actions or persistent execution state.
+
+**Next engineering session:** Confirm the new GitHub Actions result; then prefer an explicit, testable deterministic workflow state contract before adding approval-gated simulated mutations.
+
+
 ## 2026-11-17 — Day 4: Correlated, privacy-conscious tool authorization events
 
 **Goal:** Make model-driven tool authorization decisions observable without logging raw tool arguments, employee identifiers, or policy exceptions.

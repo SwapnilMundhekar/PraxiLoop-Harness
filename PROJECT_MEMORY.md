@@ -1,8 +1,8 @@
 # PraxiLoop Harness — Project Memory / Living Source of Truth
 
-**Version:** 1.6
+**Version:** 1.7
 **Last updated:** 2026-11-17 (Australia/Melbourne)
-**Status:** Phase 1 in progress. Day 3 GitHub CI was verified green; Day 4 adds privacy-conscious, correlation-linked tool authorization log events with 33 passing Windows tests. No authenticated user authorization, durable audit store, workflow persistence or deployment.
+**Status:** Phase 1 in progress. Day 4 GitHub CI is verified green; a second 17 November session added a per-investigation attempted-tool-call budget and strict finite runtime-limit validation. Windows/Python 3.12 has 51 passing tests. No user authentication, workflow persistence, durable audit trail or deployment.
 **Project name:** PraxiLoop Harness  
 **Classification:** Portfolio / engineering learning project, independent of any earlier project
 
@@ -122,7 +122,7 @@ Architectural design principles:
 | Streaming | Server-Sent Events or a justified alternative | Streaming UI events are not proof of durable execution |
 | Packaging | Docker Compose for local services | Production deployment comes after local correctness |
 
-Technology statuses as of v1.6: Python, FastAPI, Pydantic, pytest and the deterministic mock model adapter are implemented and tested. GitHub CI runs for Day 2 (`0d43c24`) and Day 3 (`db769bb`) completed successfully. The Day 3 request-scoped tool authorization is now instrumented with Python logging metadata and correlation IDs; six new tests increase the Windows suite to 33 passing tests. This does not provide authenticated user/tenant authorization, durable auditing, or telemetry exports. PostgreSQL, DBOS, MCP, OpenTelemetry, streaming, sandboxing, Docker Compose and live models are planned/unverified.
+Technology statuses as of v1.7: Python, FastAPI, Pydantic, pytest and the deterministic mock adapter are implemented and tested. GitHub CI runs for Day 2 (`0d43c24`), Day 3 (`db769bb`) and Day 4 (`a2c6d8f`) completed successfully. Request-scoped tool authorization and correlation-linked diagnostic audit events are present. An independent per-request tool-call attempt budget and finite/strict config validation expand the Windows suite to **51 passing tests**. No authenticated user/tenant authorization, durable auditing, workflow persistence or exported traces yet. PostgreSQL, DBOS, MCP, OpenTelemetry, streaming, sandboxing, Docker Compose and live models remain planned/unverified.
 
 ## 7. Development phases and acceptance gates
 
@@ -132,13 +132,13 @@ Technology statuses as of v1.6: Python, FastAPI, Pydantic, pytest and the determ
 - Set up project instructions and this memory file.
 - **Exit gate:** approved scope, initial technical decisions, and Phase 1 acceptance tests written down.
 
-### Phase 1 — Minimal agent harness (IN PROGRESS: CI, REQUEST-SCOPE AUTHORIZATION, DIAGNOSTIC AUDIT EVENTS)
+### Phase 1 — Minimal agent harness (IN PROGRESS: CI, TOOL AUTHORIZATION, AUDIT EVENTS, RESOURCE BUDGETS)
 
 **Build:** Python package/repo, FastAPI endpoint, typed request/response contracts, model adapter (with mock test mode), tool registry with allowlisting and schema validation, bounded agent loop, structured errors, correlation IDs, and pytest suite.
 
 **Demonstrate:** a reproducible onboarding investigation with a deterministic/mock LLM and safe read-only tool calls. Add a real model only behind an adapter and explicit configuration.
 
-**Exit gate:** local setup works from README; normal and invalid request tests pass; invalid or forbidden tool invocations fail closed; agent loop has iteration/time/cost bounds. **Progress:** The initial 20-test baseline grew to 27 tests on Day 3, then **33 passing tests** on Windows/Python 3.12 on Day 4 with correlation-linked authorization event checks. The Day 2 and Day 3 GitHub Actions runs passed; Day 4 CI must be verified separately after push. The earlier wheel build was successful. Dependency locking, authenticated caller identity, durable audit storage, and real live-provider cost controls are not implemented; mock model-reported token counts do not enforce dollar costs.
+**Exit gate:** local setup works from README; normal and invalid request tests pass; invalid or forbidden tool invocations fail closed; agent loop has iteration/time/cost bounds. **Progress:** The initial 20-test baseline grew to 27 on Day 3, 33 on Day 4, and **51 passing tests** in the additional 17 November session (separate tool-call attempt limit, strict finite timeout and positive-integer budget checks, concurrent-run isolation). Day 2/3/4 GitHub Actions runs passed; the newest commit's hosted CI must be checked after push. The earlier wheel build was successful. Dependency locking, authenticated caller identity, durable auditing and real provider cost controls are not implemented; model-reported tokens do not enforce billing.
 
 ### Phase 2 — Durable execution
 
@@ -205,17 +205,17 @@ Discussed education options:
 
 ## 10. Current status / next action
 
-**Day 4 checkpoint — 2026-11-17 (Australia/Melbourne)**
+**Additional 2026-11-17 session (second session today) — verified local code checkpoint**
 
-- **Local Git checkout:** `E:\PraxiLoop-Harness` on connected Windows `DESKTOP-659EDUQ`, Python 3.12.3, `main` tracking `origin/main`.
-- **Verified prior checkpoint:** Day 3 commit `db769bb726e525e521fd1cdc94461121a20a8e33` was pushed to `origin/main`; GitHub Actions run `43422099673` completed successfully (https://github.com/SwapnilMundhekar/PraxiLoop-Harness/actions/runs/43422099673). Working tree was clean entering Day 4.
-- **Day 4 implementation:** Python logger `praxiloop.tool_audit` emits only fixed `tool_authorization` messages and structured `LogRecord.extra` attributes: `audit_event`, `correlation_id`, trusted `tool_name`, `decision` and `reason_code`. Allowed decisions use INFO, denials WARNING. Unknown model-proposed names are not echoed, and raw tool arguments, employee identifiers and exception text are not logged. The runner propagates its correlation ID into the trusted `ToolExecutionContext`. No policy or tool side effect semantics were loosened.
-- **Day 4 local validation:** Six additional Python pytest tests cover permitted/denied audit records, log-injection strings in unknown tool names, invalid-argument redaction, exception redaction, and API-to-tool correlation-ID matching. Windows/Python 3.12.3: **33 passed, 1 existing Starlette TestClient deprecation warning**. The Day 4 commit/push and hosted CI result must be independently verified from real Git/GitHub evidence, not inferred from the working files.
-- **Status taxonomy:** Diagnostic logging hooks are implemented and locally tested. A configured handler is required for collection (especially INFO-level allowed events). There is no persistent/immutable auditing, retention policy, centralized export, OpenTelemetry, user authentication or tenant authorization. The model cannot read another department than the one the unauthenticated caller requested, but the caller can still choose that department.
+- **Local checkout:** `E:\PraxiLoop-Harness` on connected Windows `DESKTOP-659EDUQ`, Python 3.12.3, Git `main` tracking `origin/main`. Entering this session the tree was clean and the latest remote commit was `a2c6d8f2744446a6b364283a5fa6ad7aba28843a` (Day 4 observability). Its GitHub Actions run `44070684307` was verified green: https://github.com/SwapnilMundhekar/PraxiLoop-Harness/actions/runs/44070684307.
+- **Calendar integrity:** Day 4 had already created one commit on 17 November 2026. This is an *additional* development session requested on the same calendar date; no dates, author times, or Git history have been backdated or fabricated.
+- **Implementation:** `RunLimits.max_tool_calls` defaults to 2, appended after pre-existing fields for positional compatibility. `AgentRunner` now tracks attempted tool calls per `_execute` invocation and refuses the next request with `LimitExceeded` *before tool registry invocation*, independent of model-step and reported-token budgets. Count limits must be positive non-boolean integers, and `timeout_seconds` must be a positive, finite number (rejecting NaN, infinities, zero, strings, booleans and extreme unrepresentable values).
+- **Tests:** New `tests/test_limits.py` includes 14 parametrized malformed-limit cases plus blocked third handler call, allowed normal single call, API error redaction and concurrent per-request isolation (18 new tests). Local Windows/Python 3.12.3 suite: **51 passed with 1 existing Starlette TestClient deprecation warning**. Python compile check succeeded. The newest commit hash, push and hosted CI result require independent GitHub verification after commit.
+- **Limits of safety:** Per-run counters prevent additional registry invocations but cannot guarantee billing limits or an OS hard-stop on a blocked native/remote operation. `asyncio.wait_for` is cooperatively cancellable; no exactly-once side effects, workflow persistence or authorization of external enterprise resources is implemented.
 
-**Next development session (`next`):** Inspect current Git history, working tree and latest Actions run. Make one narrowly scoped, tested production-relevant increment—prefer an explicit authenticated caller identity contract, a controlled audit sink, or deterministic workflow transitions before adding any privileged side effects. Create exactly one meaningful commit on the actual working date; no blank or backdated commits.
+**Next engineering task (`next`):** Inspect latest Git history, repo state and hosted GitHub Actions run. Add a deterministic workflow state/transition contract or another small tested trust-boundary improvement *before* privileged provisioning, then commit once and verify. Never manufacture blank/backdated Git activity.
 
-**Daily Windows protocol:** Provide CMD commands from `C:` to `E:`, `cd \PraxiLoop-Harness`, `dir`, targeted `notepad` paths and full file contents when user manually edits; run pytest, inspect Git stage diff, commit once, push and verify the remote SHA plus clean status. Downloads default to `C:\Users\SSS\Downloads`. Direct remote editing is permitted when the computer remains connected and the user requests the change. The authoritative Git-tracked `PROJECT_MEMORY.md` and `PROJECT_INSTRUCTIONS.md` do not update ChatGPT Project settings or uploaded attachments automatically.
+**Daily Windows procedure:** Start CMD at `C:`, switch to `E:`, `cd \PraxiLoop-Harness`, inspect `dir`, `git status` and `git log`. Show `notepad` paths and complete contents for manual edits. Run pytest, review staged diff, create one real commit for the session, push and compare remote SHA with local HEAD. Downloads default to `C:\Users\SSS\Downloads`; repo source of truth is Git-tracked `PROJECT_MEMORY.md` and `PROJECT_INSTRUCTIONS.md`. ChatGPT Project uploaded files/settings do not update automatically.
 
 ## 11. Working agreement for future ChatGPT chats
 
@@ -242,6 +242,7 @@ Discussed education options:
 | 2026-11-11 | Treat each `next` as one small, tested development day and provide literal Windows CMD commands | Let the user run, understand, test, and commit each improvement |
 | 2026-11-13 | Enforce request-bound tool argument policies before tool execution | Prevent model-initiated cross-department access, and deny missing/failed policy checks; this is not user authentication |
 | 2026-11-17 | Emit correlation-linked tool authorization decision metadata with a privacy-constrained schema | Make policy denials/approvals observable without logging raw model arguments, exception text or unknown model-selected tool names |
+| 2026-11-17 (additional session) | Enforce a separate per-investigation attempted-tool-call limit and finite configuration validation | Prevent tool-request amplification even with a larger model-step budget, reject invalid runtime settings before execution, keep per-run limits isolated |
 
 ## 13. Change log
 
@@ -252,16 +253,17 @@ Discussed education options:
 - **v1.3 — 2026-11-11:** Reconciled local and remote Git evidence: E: checkout verified, Python 3.12 Windows test suite passed 20 tests, initial commit ead1d0a pushed to GitHub main. Recorded next CI milestone, and corrected the current checkpoint and file location conventions.
 - **v1.4 — 2026-11-12:** Added Python 3.12 GitHub Actions CI, least-privilege workflow permissions, updated docs and project checkpoint. Subsequent hosted CI run for commit `0d43c24` was independently verified green.
 - **v1.5 — 2026-11-13:** Added trusted request-scope context and mandatory per-tool authorization before handler invocation. Preserved evidence checks; seven tests increased the suite to **27 passing** on Windows. Day 3 hosted CI was subsequently verified green for `db769bb`.
-- **v1.6 — 2026-11-17:** Added correlation-linked, privacy-conscious tool authorization decision logs, six regression tests and documentation; **33 tests pass** on Windows. The Day 4 Git push and hosted CI status must be independently checked after this working-file checkpoint is committed.
+- **v1.6 — 2026-11-17:** Added correlation-linked privacy-conscious authorization decision logs and six regression tests; 33 tests passed locally. Day 4 commit `a2c6d8f` was later verified pushed with green hosted CI run `44070684307`.
+- **v1.7 — 2026-11-17 (second session):** Added positive-integer, finite runtime limit validation and an independent per-request attempted-tool-call budget. New regression suite covers over-budget pre-execution denial, valid one-call path, API error redaction, concurrency and malformed configurations; **51 tests passed** on Windows. New remote CI outcome must be checked separately after push.
 
-## 14. Validation and engineering cautions (v1.6)
+## 14. Validation and engineering cautions (v1.7)
 
-- Day 4 Windows validation: `E:\PraxiLoop-Harness\.venv\Scripts\python.exe -m pytest -q` → **33 passed, 1 existing Starlette TestClient deprecation warning** on Python 3.12.3. Initial Day 3 baseline: 27 tests. New tests target privacy-conscious authorization logging, failure redaction and API/tool correlation.
-- Historical Linux test command: `cd praxiloop-harness && PYTHONPATH=src python -m pytest -q` → `20 passed in 0.33s` on the initial environment. GitHub Actions runs for Day 2 (`0d43c24`) and Day 3 (`db769bb`) were verified successful; Day 4's new run requires independent verification.
+- Additional 17 November Windows validation: `E:\PraxiLoop-Harness\.venv\Scripts\python.exe -m pytest -q` → **51 passed, 1 known Starlette TestClient deprecation warning** on Python 3.12.3 (up from 33 tests). New tests prove independent budgets, pre-execution denial, concurrency isolation, finite timeouts and strict counts.
+- Historical Linux test command: `cd praxiloop-harness && PYTHONPATH=src python -m pytest -q` → 20 passed on the initial environment. GitHub Actions runs for Day 2 (`0d43c24`), Day 3 (`db769bb`) and Day 4 (`a2c6d8f`) were independently verified successful; latest-session CI requires its own verification.
 - Test suite covers the mock happy paths, request rejection, unsupported tool/name or effect, typed I/O, model adapter failure handling, finish-without-evidence, mismatched policy evidence, bounded steps, reported-token budget, cooperative deadline, and error redaction.
 - The policy tool evidence establishes only that a **trusted, locally registered synthetic policy-read function** ran. It is not independent verification of an enterprise system mutation.
 - The Day 3 authorization callback gates **model-proposed arguments** against a validated request's department, not an authenticated principal. A caller may choose any supported department until external identity and policy enforcement are implemented.
 - Day 4 authorization logs contain deliberately limited metadata. They are neither durable nor tamper-resistant; INFO entries require configured log handling. Tests assert no raw model-supplied tool names or argument values appear in the emitted log message. Sanitization for other log sinks, protection against malicious log handlers, retention and central collection remain future work.
 - A declared `ToolEffect.READ_ONLY` is metadata, **not** an OS-level permission boundary. Only a trusted function is registered in the slice. Formal isolation is later work.
-- `asyncio.wait_for` can cancel cooperative tasks but does not forcibly stop blocked native code; reported mock tokens do not bound real model cost.
+- `asyncio.wait_for` can cancel cooperative tasks but does not forcibly stop blocked native code. The new call budget is local to an investigation and counts attempted registry invocations; it does not enforce provider billing or external exactly-once semantics. Reported mock tokens do not bound real model cost.
 - The attached original Project files and ChatGPT Project instructions were **not automatically overwritten** by generating these local files. Replace the prior `PROJECT_MEMORY.md` attachment and paste the updated `PROJECT_INSTRUCTIONS.md` text into Project settings.

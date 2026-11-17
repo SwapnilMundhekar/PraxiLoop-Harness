@@ -47,16 +47,17 @@ Give the user **complete Windows Command Prompt (CMD)** instructions, assuming a
 
 ## Current checkpoint — update only on verified progress
 
-**Date:** 2026-11-17 (Australia/Melbourne)
-**Project:** PraxiLoop Harness — Python-first enterprise AI agent harness
-**GitHub repository:** https://github.com/SwapnilMundhekar/PraxiLoop-Harness
-**Local checkout:** `E:\PraxiLoop-Harness`, Windows CMD, Python 3.12.3
-**Entering Day 4:** clean Git `main`, last commit `db769bb726e525e521fd1cdc94461121a20a8e33`, verified Day 3 GitHub Actions run `43422099673` passed.
-**Day 4 work:** Implemented correlation-linked authorization decision log records with `praxiloop.tool_audit` (trusted tool name, fixed decision/reason codes, no raw model arguments or exception data). The runtime propagates generated correlation IDs into the tool context. Six new tests increased Windows Python 3.12 suite to **33 passing tests**.
-**Verification still required:** Check Day 4 Git commit/push and its GitHub Actions result against the actual remote. Treat local code/test evidence separately from hosted CI.
-**Architecture state:** Phase 1 in progress, safe mock-only read-only tool gateway with request-scope authorization and diagnostic decision logging. Not authenticated user authorization, persistent audit storage, OpenTelemetry, durable workflows or approved real-world side effects.
-**Next `next` session:** Reconcile latest remote commit, working-tree status and CI; implement one focused, tested improvement (e.g., trusted authenticated-caller context or deterministic workflow transitions), commit once, push and independently verify.
-**Source of truth:** The full `PROJECT_MEMORY.md` v1.6 tracked in Git. Changes to this tracked file and `PROJECT_INSTRUCTIONS.md` do not automatically replace ChatGPT Project attachments/settings.
+**Local date:** 2026-11-17 (Australia/Melbourne), additional development session on the same calendar date as Day 4.
+**Project:** PraxiLoop Harness — Python-first mock-only enterprise agent harness.
+**GitHub:** https://github.com/SwapnilMundhekar/PraxiLoop-Harness
+**Windows checkout:** `E:\PraxiLoop-Harness` with Python 3.12.3; user prefers complete CMD instructions beginning at `C:`.
+**Previously verified:** Day 4 commit `a2c6d8f2744446a6b364283a5fa6ad7aba28843a` on `origin/main` and hosted GitHub Actions run `44070684307` completed successfully. The repo was clean entering this session.
+**New implementation:** `RunLimits` has a configurable `max_tool_calls=2`, independent of step/reported-token/wall-clock bounds. `AgentRunner` counts attempted calls per investigation and rejects an over-budget call *before* any tool invocation. Config limits reject nonpositive, non-integer, bool, nonfinite or otherwise invalid runtime values.
+**Local verification:** Windows/Python 3.12.3 pytest suite expanded from 33 to **51 passed**, with one known Starlette TestClient warning; new tests cover pre-execution denial, legitimate workflow success, redacted API response, concurrent request isolation and malformed budget inputs.
+**Verification pending at write time:** Check the additional 17 November commit hash, remote push, hosted CI outcome, and clean working tree. Do not claim those until the Git/GitHub output confirms them.
+**Phase:** Phase 1 in progress. Model/tool resource bounds are still application-level controls, not guaranteed provider cost limits, durable execution, authenticated authorization, or production sandboxing.
+**Next `next` session:** Inspect current Git status/history and latest CI; implement one small, tested deterministic workflow-state or trust-boundary improvement, then one real commit and verified push. Distinguish sessions from calendar days: two real commits on the same date are not separate contribution-calendar days.
+**Continuity:** Full tracked source of truth is `PROJECT_MEMORY.md` v1.7. ChatGPT Project settings/uploads are not automatically changed when files are committed to GitHub.
 
 Windows development environment:
 - Downloaded ZIPs: C:\Users\SSS\Downloads

@@ -1,6 +1,7 @@
 """A bounded agent loop; success is conditioned on tool evidence, not model text."""
 
 import asyncio
+import math
 from dataclasses import dataclass
 from uuid import uuid4
 
@@ -22,10 +23,24 @@ class RunLimits:
     max_model_steps: int = 3
     max_reported_tokens: int = 100
     timeout_seconds: float = 2.0
+    max_tool_calls: int = 2
 
     def __post_init__(self) -> None:
-        if self.max_model_steps < 1 or self.max_reported_tokens < 1 or self.timeout_seconds <= 0:
-            raise ValueError("All runtime limits must be positive")
+        for name in ("max_model_steps", "max_reported_tokens", "max_tool_calls"):
+            value = getattr(self, name)
+            if type(value) is not int or value < 1:
+                raise ValueError(f"{name} must be a positive integer")
+
+        try:
+            finite_timeout = (
+                type(self.timeout_seconds) in (int, float)
+                and math.isfinite(self.timeout_seconds)
+                and self.timeout_seconds > 0
+            )
+        except (OverflowError, ValueError):
+            finite_timeout = False
+        if not finite_timeout:
+            raise ValueError("timeout_seconds must be a finite positive number")
 
 
 class AgentRunner:
@@ -55,6 +70,7 @@ class AgentRunner:
         )
         evidence: PolicyEvidence | None = None
         reported_tokens = 0
+        tool_calls = 0
 
         for _ in range(self._limits.max_model_steps):
             try:
@@ -69,6 +85,11 @@ class AgentRunner:
                 raise LimitExceeded("Model token budget exceeded")
 
             if isinstance(action, ToolCall):
+                # Bound attempted calls independently of model steps and token reports.
+                # Check before invoking any tool to prevent excess external reads.
+                if tool_calls >= self._limits.max_tool_calls:
+                    raise LimitExceeded("Tool-call budget exceeded")
+                tool_calls += 1
                 output = await self._tools.invoke(action.name, action.arguments, context=context)
                 observations.append(
                     ToolObservation(name=action.name, output=output.model_dump(mode="json"))
