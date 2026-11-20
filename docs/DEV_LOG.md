@@ -2,6 +2,24 @@
 
 ## 2026-11-17 — Additional session: Independent tool-call execution budget
 
+
+## 2026-11-20 — Repair workflow state machine
+
+**Objective:** Replace three zero-byte files accidentally committed on 19 November with the tested deterministic workflow-state implementation.
+
+**Implemented:**
+- Explicit onboarding workflow states and transition events.
+- Immutable workflow snapshots with revision counters.
+- Approval, denial, execution, verification, and failure transition paths.
+- Rejection of invalid transitions and terminal-state reopening.
+- Automated transition-contract regression tests.
+
+**Verification:** Run `.\.venv\Scripts\python.exe -m pytest -q` and record the actual result before committing.
+
+**Limitations:** This state machine is not integrated into the FastAPI execution path. It does not authenticate approvers, persist workflow state, provision accounts, or independently verify external outcomes.
+
+**Next:** Integrate deterministic workflow transitions into a mock orchestration service with tests.
+
 **Calendar note:** This is a second meaningful development session on 17 November, following the already-published Day 4 observability commit; no date has been changed or backdated.
 
 **Objective:** Prevent excessive model-driven tool invocations independently of the configured model-step limit, and reject invalid execution limits at configuration time.

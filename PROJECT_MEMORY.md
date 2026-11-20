@@ -1,5 +1,17 @@
 # PraxiLoop Harness — Project Memory / Living Source of Truth
 
+### Verified checkpoint — 2026-11-20
+
+- Previous commit `d76e69b` on 19 November contained three empty workflow files.
+- Today's change restores `workflow_state.py`, `test_workflow_state.py`, and `WORKFLOW_STATE_MODEL.md`.
+- The implementation is a pure deterministic state-transition contract, not an executing workflow.
+- Local test result: record actual pytest output.
+- GitHub commit and CI result: verify after pushing.
+- Next milestone: connect the state machine to a mock onboarding orchestration service with explicit approval boundaries.
+- No durable storage, authenticated approval, independent external verification, or real provisioning exists yet.
+
+**v1.8 changelog:** Repaired empty workflow-state files and added the deterministic state contract and regression tests.
+
 **Version:** 1.7
 **Last updated:** 2026-11-17 (Australia/Melbourne)
 **Status:** Phase 1 in progress. Day 4 GitHub CI is verified green; a second 17 November session added a per-investigation attempted-tool-call budget and strict finite runtime-limit validation. Windows/Python 3.12 has 51 passing tests. No user authentication, workflow persistence, durable audit trail or deployment.
