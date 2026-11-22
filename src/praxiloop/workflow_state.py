@@ -88,6 +88,15 @@ class WorkflowSnapshot:
     def is_terminal(self) -> bool:
         return self.state in _TERMINAL
 
+    @property
+    def allowed_events(self) -> frozenset[WorkflowEvent]:
+        """Return legal next events, not execution permission."""
+        return frozenset(
+            event
+            for state, event in _TRANSITIONS
+            if state is self.state
+        )
+
     def apply(self, event: WorkflowEvent) -> "WorkflowSnapshot":
         """Return a new snapshot or fail closed; never execute a side effect."""
         if type(event) is not WorkflowEvent:
