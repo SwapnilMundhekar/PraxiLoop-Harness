@@ -1,3 +1,13 @@
+
+### 2026-11-23 - Bounded event replay
+
+- Added pure deterministic workflow event replay.
+- Revision mismatch and replay-length checks fail closed.
+- No persistence, transactional concurrency control,
+  trusted approval evidence, or external side effects.
+- Tests: verify with local pytest and GitHub Actions.
+- Next: integrate trusted workflow commands with
+  persisted state and approval boundaries.
 # PraxiLoop Harness — Project Memory / Living Source of Truth
 
 ### Verified checkpoint — 2026-11-20
@@ -12,8 +22,8 @@
 
 **v1.8 changelog:** Repaired empty workflow-state files and added the deterministic state contract and regression tests.
 
-**Version:** 1.7
-**Last updated:** 2026-11-17 (Australia/Melbourne)
+**Version:** 1.9
+**Last updated:** 2026-11-23 (Australia/Melbourne)
 **Status:** Phase 1 in progress. Day 4 GitHub CI is verified green; a second 17 November session added a per-investigation attempted-tool-call budget and strict finite runtime-limit validation. Windows/Python 3.12 has 51 passing tests. No user authentication, workflow persistence, durable audit trail or deployment.
 **Project name:** PraxiLoop Harness  
 **Classification:** Portfolio / engineering learning project, independent of any earlier project

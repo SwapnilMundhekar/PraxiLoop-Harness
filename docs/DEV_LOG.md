@@ -88,3 +88,6 @@
 **Limitations:** No CI, persistence, durable recovery, approval workflow, real LLM usage enforcement, authentication, or production deployment.
 
 **Next development session:** Add GitHub Actions CI for the tested Python 3.12 suite, validate it and make one new meaningful commit.
+## 2026-11-23 - Bounded workflow event replay
+
+Added pure event replay with revision checks, event bounds, immutable snapshots, and regression tests. No durable storage or trusted human approval yet.
