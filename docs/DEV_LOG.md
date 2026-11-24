@@ -1,4 +1,8 @@
 # PraxiLoop Harness — Development Log
+## 2026-11-24 — Process-local workflow event journal
+
+Added strict typed append, per-workflow idempotency receipts, optimistic revision checks, immutable event history, and a single-process lock guarding concurrent callers. Tests include replay consistency, stale writes, conflicting keys, invalid inputs, and simultaneous revision-zero writers. This is a non-durable test double; no real approvals, database transactions, recovery, or external effects are implemented.
+
 
 ## 2026-11-17 — Additional session: Independent tool-call execution budget
 

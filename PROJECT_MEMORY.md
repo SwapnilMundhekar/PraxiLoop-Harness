@@ -1,14 +1,15 @@
-
-### 2026-11-23 - Bounded event replay
-
-- Added pure deterministic workflow event replay.
-- Revision mismatch and replay-length checks fail closed.
-- No persistence, transactional concurrency control,
-  trusted approval evidence, or external side effects.
-- Tests: verify with local pytest and GitHub Actions.
-- Next: integrate trusted workflow commands with
-  persisted state and approval boundaries.
 # PraxiLoop Harness — Project Memory / Living Source of Truth
+### Development checkpoint — 2026-11-24
+
+- Added `InMemoryWorkflowJournal`: compare-and-append checks `expected_revision`, validates identifiers, and stores per-workflow event sequences and immutable snapshots.
+- Idempotency keys return the original receipt for identical retries and reject conflicting key reuse.
+- A Python thread lock serializes concurrent callers sharing one journal instance; there is no process-wide or database concurrency guarantee.
+- New regression coverage includes concurrent revision-zero writes, stale commands, replay consistency, failed transitions, input validation, and retry behavior.
+- Limitation: volatile and unbounded process-local storage; no crash recovery, trusted human approval, external side effects, distributed exactly-once effects, or authentication.
+- Next step: authenticated approval boundary and persistent transactional workflow state, tested with deliberate crashes and ambiguous effects.
+- Git daily-commit guard: verify correct Melbourne author AND committer dates, linked author email, local tests, new SHA, remote SHA and GitHub contribution eligibility. Never equate successful push with graph attribution.
+- Changelog v2.0 (2026-11-24): added process-local event journal + regression tests; updated memory and development log.
+
 
 ### Verified checkpoint — 2026-11-20
 
@@ -22,9 +23,9 @@
 
 **v1.8 changelog:** Repaired empty workflow-state files and added the deterministic state contract and regression tests.
 
-**Version:** 1.9
-**Last updated:** 2026-11-23 (Australia/Melbourne)
-**Status:** Phase 1 in progress. Day 4 GitHub CI is verified green; a second 17 November session added a per-investigation attempted-tool-call budget and strict finite runtime-limit validation. Windows/Python 3.12 has 51 passing tests. No user authentication, workflow persistence, durable audit trail or deployment.
+**Version:** 2.0
+**Last updated:** 2026-11-24 (Australia/Melbourne)
+**Status:** Phase 1 in progress. Read-only investigation and guarded tool access are implemented. Deterministic workflow state/replay and a process-local event journal with revision checks, idempotent retries, and thread-safe appends are implemented. No database durability, authenticated approvals, cross-process coordination, real provisioning, or independent outcome verification.
 **Project name:** PraxiLoop Harness  
 **Classification:** Portfolio / engineering learning project, independent of any earlier project
 
@@ -289,3 +290,13 @@ Discussed education options:
 - A declared `ToolEffect.READ_ONLY` is metadata, **not** an OS-level permission boundary. Only a trusted function is registered in the slice. Formal isolation is later work.
 - `asyncio.wait_for` can cancel cooperative tasks but does not forcibly stop blocked native code. The new call budget is local to an investigation and counts attempted registry invocations; it does not enforce provider billing or external exactly-once semantics. Reported mock tokens do not bound real model cost.
 - The attached original Project files and ChatGPT Project instructions were **not automatically overwritten** by generating these local files. Replace the prior `PROJECT_MEMORY.md` attachment and paste the updated `PROJECT_INSTRUCTIONS.md` text into Project settings.
+
+### 2026-11-23 - Bounded event replay
+
+- Added pure deterministic workflow event replay.
+- Revision mismatch and replay-length checks fail closed.
+- No persistence, transactional concurrency control,
+  trusted approval evidence, or external side effects.
+- Tests: verify with local pytest and GitHub Actions.
+- Next: integrate trusted workflow commands with
+  persisted state and approval boundaries.
