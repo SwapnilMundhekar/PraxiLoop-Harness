@@ -1,5 +1,10 @@
 # PraxiLoop Harness — Development Log
 
+## 2026-11-25 — Second session: approval command boundary
+
+Added typed approval intent and separate trusted-host identity context, with an explicit authorization callback, self-approval denial, and fail-closed policy exceptions. The gateway delegates accepted decisions to the existing revision-checked, idempotent, bounded in-memory journal. Regression tests cover retries, stale commands, invalid inputs, races and denials. NOT authenticated approval: trusted identity data and journal access control are not enforced by this module, and no approval provenance is durably persisted.
+
+
 ## 2026-11-25 — Bounded process-local workflow journal
 
 Default per-instance quotas: 1,024 workflow IDs and 16 accepted events per workflow. New workflows/events fail closed at capacity; no receipt is dropped or silently evicted. Identical retries and revision checks remain deterministic. New tests cover configuration validation, saturation, isolation and concurrency. Volatile store only; this is not durable execution or an authenticated approval gate.

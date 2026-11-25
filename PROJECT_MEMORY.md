@@ -1,5 +1,17 @@
 # PraxiLoop Harness — Project Memory / Living Source of Truth
 
+### Development checkpoint — 2026-11-25 (second session)
+
+- Added a separate ApprovalIntent, server-supplied ApprovalContext and a fail-closed ApprovalGateway for APPROVE and DENY commands.
+- Rejects malformed intents/identities, self-approval, untrusted policy outcomes, policy errors and non-decision events before journal append.
+- Reuses the journal's revision checks, capacity limits, idempotency receipts and concurrency serialization.
+- New automated regression tests cover approval/denial, forbidden and stale commands, policy failures, retries, saturation and racing decisions.
+- This is only a process-local command boundary: actors are NOT authenticated in this module, requester identity and policy source MUST come from a trusted host, actor evidence is NOT durably stored, and callers can still bypass the gateway by invoking the journal directly.
+- Still not integrated with FastAPI or production enterprise write actions. The next milestone is authenticated request principal + approval evidence + durable state.
+- Second substantive 25 November commit was explicitly requested as an exception to the usual one-commit-per-day schedule.
+- Changelog v2.2 (2026-11-25): approval decision gateway with fail-closed policy callback and regression tests; no real authentication claims.
+
+
 ### Development checkpoint — 2026-11-25
 
 - Bounded the volatile in-memory journal to 1,024 workflows and 16 events per workflow by default; both positive integer limits are configurable.
@@ -35,7 +47,7 @@
 
 **v1.8 changelog:** Repaired empty workflow-state files and added the deterministic state contract and regression tests.
 
-**Version:** 2.1
+**Version:** 2.2
 **Last updated:** 2026-11-25 (Australia/Melbourne)
 **Status:** Phase 1 in progress. Read-only investigation and guarded tool access are implemented. Deterministic workflow state/replay and a process-local event journal with revision checks, idempotent retries, and thread-safe appends are implemented. No database durability, authenticated approvals, cross-process coordination, real provisioning, or independent outcome verification.
 **Project name:** PraxiLoop Harness  
