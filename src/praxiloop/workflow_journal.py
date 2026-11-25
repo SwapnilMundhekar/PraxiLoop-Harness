@@ -14,6 +14,10 @@ from praxiloop.workflow_state import WorkflowEvent, WorkflowSnapshot
 _ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
 
 
+class JournalCapacityExceeded(ValueError):
+    """A configured in-memory journal limit was reached before an append."""
+
+
 class IdempotencyConflict(ValueError):
     """One idempotency key was reused with a different command."""
 
@@ -34,7 +38,13 @@ def _check_id(value: object, label: str) -> str:
 class InMemoryWorkflowJournal:
     """Thread-safe, volatile compare-and-append with per-workflow deduplication."""
 
-    def __init__(self) -> None:
+    def __init__(self, *, max_workflows: int = 1024, max_events_per_workflow: int = 16) -> None:
+        if type(max_workflows) is not int or max_workflows < 1:
+            raise ValueError("max_workflows must be a positive integer")
+        if type(max_events_per_workflow) is not int or max_events_per_workflow < 1:
+            raise ValueError("max_events_per_workflow must be a positive integer")
+        self._max_workflows = max_workflows
+        self._max_events_per_workflow = max_events_per_workflow
         self._lock = Lock()
         self._snapshots: dict[str, WorkflowSnapshot] = {}
         self._events: dict[str, tuple[WorkflowEvent, ...]] = {}
@@ -79,7 +89,12 @@ class InMemoryWorkflowJournal:
                 raise RevisionMismatch("Workflow revision mismatch")
 
             updated = current.apply(event)
-            history = self._events.get(workflow_id, ()) + (event,)
+            if workflow_id not in self._snapshots and len(self._snapshots) >= self._max_workflows:
+                raise JournalCapacityExceeded("maximum workflow count reached")
+            previous_history = self._events.get(workflow_id, ())
+            if len(previous_history) >= self._max_events_per_workflow:
+                raise JournalCapacityExceeded("maximum events per workflow reached")
+            history = previous_history + (event,)
             receipt = _Receipt(event, expected_revision, updated)
             self._events[workflow_id] = history
             self._snapshots[workflow_id] = updated

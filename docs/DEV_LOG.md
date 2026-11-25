@@ -1,4 +1,9 @@
 # PraxiLoop Harness — Development Log
+
+## 2026-11-25 — Bounded process-local workflow journal
+
+Default per-instance quotas: 1,024 workflow IDs and 16 accepted events per workflow. New workflows/events fail closed at capacity; no receipt is dropped or silently evicted. Identical retries and revision checks remain deterministic. New tests cover configuration validation, saturation, isolation and concurrency. Volatile store only; this is not durable execution or an authenticated approval gate.
+
 ## 2026-11-24 — Process-local workflow event journal
 
 Added strict typed append, per-workflow idempotency receipts, optimistic revision checks, immutable event history, and a single-process lock guarding concurrent callers. Tests include replay consistency, stale writes, conflicting keys, invalid inputs, and simultaneous revision-zero writers. This is a non-durable test double; no real approvals, database transactions, recovery, or external effects are implemented.

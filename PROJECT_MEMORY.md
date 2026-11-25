@@ -1,4 +1,16 @@
 # PraxiLoop Harness — Project Memory / Living Source of Truth
+
+### Development checkpoint — 2026-11-25
+
+- Bounded the volatile in-memory journal to 1,024 workflows and 16 events per workflow by default; both positive integer limits are configurable.
+- Under the existing lock, rejects new accepted workflows/events once capacity is full; accepted histories and idempotency receipts are never evicted silently.
+- Identical retries remain idempotent after capacity exhaustion; invalid transitions and stale revisions keep their existing failure semantics.
+- New tests cover saturation, retry/conflict semantics, thread races, and malformed limits. Local suite/CI must be verified by execution, not presumed.
+- Still no PostgreSQL persistence, cross-process safety, authenticated approval, external side effects, or durable exactly-once guarantee.
+- Next: trusted approval command boundary, then transactional persistence and recovery/reconciliation tests.
+- Git contribution protocol: one meaningful, locally tested commit per genuine Melbourne workday; explicit author/committer dates, linked email, remote SHA, and separate contribution calendar check.
+- Changelog v2.1 (2026-11-25): bounded volatile journal growth and regression coverage.
+
 ### Development checkpoint — 2026-11-24
 
 - Added `InMemoryWorkflowJournal`: compare-and-append checks `expected_revision`, validates identifiers, and stores per-workflow event sequences and immutable snapshots.
@@ -23,8 +35,8 @@
 
 **v1.8 changelog:** Repaired empty workflow-state files and added the deterministic state contract and regression tests.
 
-**Version:** 2.0
-**Last updated:** 2026-11-24 (Australia/Melbourne)
+**Version:** 2.1
+**Last updated:** 2026-11-25 (Australia/Melbourne)
 **Status:** Phase 1 in progress. Read-only investigation and guarded tool access are implemented. Deterministic workflow state/replay and a process-local event journal with revision checks, idempotent retries, and thread-safe appends are implemented. No database durability, authenticated approvals, cross-process coordination, real provisioning, or independent outcome verification.
 **Project name:** PraxiLoop Harness  
 **Classification:** Portfolio / engineering learning project, independent of any earlier project
