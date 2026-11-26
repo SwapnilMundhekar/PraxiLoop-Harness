@@ -1,5 +1,9 @@
 # PraxiLoop Harness — Development Log
 
+## 2026-11-26 — Atomic journal inspection and integrity verification
+
+Added a lock-consistent read of snapshot plus events and a pure replay-based integrity checker. Validated revision/state agreement, invalid event detection, immutable historical views, retry semantics, and concurrent writer/reader consistency. This checks internal journal consistency only: it cannot validate the truth of past approvals, prevent tampering or recover from a process crash. No real mutations or database durability.
+
 ## 2026-11-25 — Second session: approval command boundary
 
 Added typed approval intent and separate trusted-host identity context, with an explicit authorization callback, self-approval denial, and fail-closed policy exceptions. The gateway delegates accepted decisions to the existing revision-checked, idempotent, bounded in-memory journal. Regression tests cover retries, stale commands, invalid inputs, races and denials. NOT authenticated approval: trusted identity data and journal access control are not enforced by this module, and no approval provenance is durably persisted.

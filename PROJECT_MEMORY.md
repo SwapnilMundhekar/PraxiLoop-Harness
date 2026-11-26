@@ -1,5 +1,14 @@
 # PraxiLoop Harness — Project Memory / Living Source of Truth
 
+### Development checkpoint — 2026-11-26
+
+- Added `WorkflowRecord` and `InMemoryWorkflowJournal.read_record`: snapshot and events are captured atomically under the existing process-local lock.
+- Added `workflow_integrity.validate_record` and `inspect_workflow`: replay journal events and detect invalid history or mismatched snapshot/state/revision.
+- Regression tests cover every workflow stage, altered records, malformed histories, snapshot immutability, retries, and concurrent reads/writes.
+- Scope: internal consistency only. Neither the journal nor its events are durable, tamper-evident, authenticated, or proof of external enterprise outcomes.
+- Next: trusted authenticated principal boundary, approval provenance storage, then PostgreSQL transactional durability and crash-recovery tests.
+- Changelog v2.3 (2026-11-26): atomic journal inspection and replay-based integrity verification.
+
 ### Development checkpoint — 2026-11-25 (second session)
 
 - Added a separate ApprovalIntent, server-supplied ApprovalContext and a fail-closed ApprovalGateway for APPROVE and DENY commands.
@@ -47,8 +56,8 @@
 
 **v1.8 changelog:** Repaired empty workflow-state files and added the deterministic state contract and regression tests.
 
-**Version:** 2.2
-**Last updated:** 2026-11-25 (Australia/Melbourne)
+**Version:** 2.3
+**Last updated:** 2026-11-26 (Australia/Melbourne)
 **Status:** Phase 1 in progress. Read-only investigation and guarded tool access are implemented. Deterministic workflow state/replay and a process-local event journal with revision checks, idempotent retries, and thread-safe appends are implemented. No database durability, authenticated approvals, cross-process coordination, real provisioning, or independent outcome verification.
 **Project name:** PraxiLoop Harness  
 **Classification:** Portfolio / engineering learning project, independent of any earlier project

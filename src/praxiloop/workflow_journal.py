@@ -23,6 +23,14 @@ class IdempotencyConflict(ValueError):
 
 
 @dataclass(frozen=True, slots=True)
+class WorkflowRecord:
+    """Consistent, immutable process-local snapshot of one workflow."""
+
+    snapshot: WorkflowSnapshot
+    events: tuple[WorkflowEvent, ...]
+
+
+@dataclass(frozen=True, slots=True)
 class _Receipt:
     event: WorkflowEvent
     expected_revision: int
@@ -49,6 +57,15 @@ class InMemoryWorkflowJournal:
         self._snapshots: dict[str, WorkflowSnapshot] = {}
         self._events: dict[str, tuple[WorkflowEvent, ...]] = {}
         self._receipts: dict[tuple[str, str], _Receipt] = {}
+
+    def read_record(self, workflow_id: str) -> WorkflowRecord:
+        """Read state and events together under the journal's single lock."""
+        workflow_id = _check_id(workflow_id, "workflow_id")
+        with self._lock:
+            return WorkflowRecord(
+                snapshot=self._snapshots.get(workflow_id, WorkflowSnapshot()),
+                events=self._events.get(workflow_id, ()),
+            )
 
     def load(self, workflow_id: str) -> WorkflowSnapshot:
         workflow_id = _check_id(workflow_id, "workflow_id")
