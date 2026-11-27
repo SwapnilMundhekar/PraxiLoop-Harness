@@ -1,5 +1,9 @@
 # PraxiLoop Harness — Development Log
 
+## 2026-11-27 - Versioned workflow checkpoint codec
+
+Added canonical v1 JSON export/import for process-local workflow records. Strict schema, identifier, enum, size, quota, duplicate-key and replay-based integrity checks reject malformed and inconsistent data without modifying the journal. Regression tests cover legal workflows and hostile inputs. The codec itself does not write to disk or a database; approval identity and external outcomes remain unverified.
+
 ## 2026-11-26 — Atomic journal inspection and integrity verification
 
 Added a lock-consistent read of snapshot plus events and a pure replay-based integrity checker. Validated revision/state agreement, invalid event detection, immutable historical views, retry semantics, and concurrent writer/reader consistency. This checks internal journal consistency only: it cannot validate the truth of past approvals, prevent tampering or recover from a process crash. No real mutations or database durability.

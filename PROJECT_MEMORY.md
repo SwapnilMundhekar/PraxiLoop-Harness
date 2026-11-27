@@ -1,5 +1,15 @@
 # PraxiLoop Harness — Project Memory / Living Source of Truth
 
+### Development checkpoint - 2026-11-27
+
+- Added `workflow_checkpoint` with a strict, deterministic v1 JSON representation for immutable workflow snapshots and their event histories.
+- Export and import validate the workflow ID, schema version, exact fields, enum values, type safety, event count, maximum payload size and state-vs-events consistency.
+- Duplicate JSON object keys and nonstandard numeric constants are rejected. Round-trip tests cover legal success, failure and denial paths plus malformed, oversized and inconsistent untrusted input.
+- This codec does not persist files or database rows. Restoring an in-memory value is not crash recovery, and internal replay is not authenticated approval evidence, cryptographic tamper detection or external outcome verification.
+- Next: authenticated principal boundary and approval provenance; then PostgreSQL transactions and genuine restart/reconciliation tests.
+- Daily Git protocol: one tested commit for genuine 27 November Melbourne work; verify author and committer dates, linked email, new SHA, remote SHA and calendar eligibility.
+- Changelog v2.4 (2026-11-27): canonical strict workflow checkpoint encoding/decoding and regression tests.
+
 ### Development checkpoint — 2026-11-26
 
 - Added `WorkflowRecord` and `InMemoryWorkflowJournal.read_record`: snapshot and events are captured atomically under the existing process-local lock.
@@ -56,8 +66,8 @@
 
 **v1.8 changelog:** Repaired empty workflow-state files and added the deterministic state contract and regression tests.
 
-**Version:** 2.3
-**Last updated:** 2026-11-26 (Australia/Melbourne)
+**Version:** 2.4
+**Last updated:** 2026-11-27 (Australia/Melbourne)
 **Status:** Phase 1 in progress. Read-only investigation and guarded tool access are implemented. Deterministic workflow state/replay and a process-local event journal with revision checks, idempotent retries, and thread-safe appends are implemented. No database durability, authenticated approvals, cross-process coordination, real provisioning, or independent outcome verification.
 **Project name:** PraxiLoop Harness  
 **Classification:** Portfolio / engineering learning project, independent of any earlier project
